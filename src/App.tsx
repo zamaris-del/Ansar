@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import SOSPage from './components/SOSPage';
-import SualPage from './components/SualPage';
-import SuhbaPage from './components/SuhbaPage';
-import KasbPage from './components/KasbPage';
-import NikahPage from './components/NikahPage';
-import DuaPage from './components/DuaPage';
-import TamkeenPage from './components/TamkeenPage';
-import MadrasahPage from './components/MadrasahPage';
-import MasjidPulsePage from './components/MasjidPulsePage';
-import WaqfPage from './components/WaqfPage';
+import SOSPage from '../components/SOSPage';
+import SualPage from '../components/SualPage';
+import SuhbaPage from '../components/SuhbaPage';
+import KasbPage from '../components/KasbPage';
+import NikahPage from '../components/NikahPage';
+import DuaPage from '../components/DuaPage';
+import TamkeenPage from '../components/TamkeenPage';
+import MadrasahPage from '../components/MadrasahPage';
+import MasjidPulsePage from '../components/MasjidPulsePage';
+import WaqfPage from '../components/WaqfPage';
 
 export default function App() {
   const [page, setPage] = useState('home');
@@ -74,4 +74,4 @@ export default function App() {
       </div>
     </div>
   );
-}
+              }

@@ -11,7 +11,6 @@ export default function KasbPage({ onBack }: { onBack: () => void }) {
   const [jobFilter, setJobFilter] = useState('All');
   const [saved, setSaved] = useState<string[]>([]);
 
-  // HIRING FIELDS
   const [posterName, setPosterName] = useState('');
   const [orgName, setOrgName] = useState('');
   const [role, setRole] = useState('');
@@ -22,7 +21,6 @@ export default function KasbPage({ onBack }: { onBack: () => void }) {
   const [details, setDetails] = useState('');
   const [contact, setContact] = useState('');
 
-  // SEEKER FIELDS
   const [sName, setSName] = useState('');
   const [skill, setSkill] = useState('');
   const [exp, setExp] = useState('');
@@ -70,120 +68,120 @@ export default function KasbPage({ onBack }: { onBack: () => void }) {
     setSName(''); setSkill(''); load();
   };
 
-  const input = "w-full mt-1.5 bg-[#F7F3EC] border rounded-[14px] px-3.5 py-3 text-[14px] outline-none";
+  const inputStyle: React.CSSProperties = { width: '100%', marginTop: 6, background: '#F7F3EC', border: '1px solid #E8DDC8', borderRadius: 14, padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
+  const labelStyle: React.CSSProperties = { display: 'block', fontSize: 11, fontWeight: 700, color: '#9ca3af', marginTop: 12, letterSpacing: 0.5 };
+  const chip = (active: boolean): React.CSSProperties => ({ padding: '8px 12px', borderRadius: 999, border: 'none', fontSize: 11, fontWeight: 700, cursor: 'pointer', background: active ? '#000' : '#f3f4f6', color: active ? '#fff' : '#374151' });
+  const filterChip = (active: boolean): React.CSSProperties => ({ padding: '8px 14px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer', background: active ? '#fff' : 'rgba(255,255,255,0.1)', color: active ? '#000' : '#fff' });
   const filteredJobs = jobFilter === 'All' ? hiring : hiring.filter(j => j.job_type === jobFilter);
+  const currencies = ['NGN ₦', 'USD $', 'GBP £', 'EUR €', 'GHS GH₵', 'KES KSh', 'AED د.إ'];
+  const selectStyle: React.CSSProperties = { background: '#F7F3EC', border: '1px solid #E8DDC8', borderRadius: 14, padding: '12px 8px', fontSize: 13, outline: 'none', flexShrink: 0 };
 
   return (
-    <div className="min-h-screen bg-[#0F2439] w-full max-w-[430px] mx-auto pb-[110px] overflow-x-hidden">
-      <div className="px-4 pt-4 flex items-center gap-3">
-        <button onClick={onBack} className="w-10 h-10 shrink-0 bg-white/10 rounded-full text-white">←</button>
-        <div><h1 className="text-white font-extrabold text-[18px]">KASB</h1><p className="text-[#D4AF78] text-[10px] font-bold">NO CV WAHALA • IMAM VOUCH = CV • HALAL WORK ONLY</p></div>
+    <div style={{ minHeight: '100vh', background: '#0F2439', width: '100%', maxWidth: 430, margin: '0 auto', paddingBottom: 110, overflowX: 'hidden', boxSizing: 'border-box' }}>
+      <div style={{ padding: '16px 16px 0', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={onBack} style={{ width: 40, height: 40, flexShrink: 0, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', color: '#fff', fontSize: 18, cursor: 'pointer' }}>←</button>
+        <div><h1 style={{ color: '#fff', fontWeight: 800, fontSize: 18, margin: 0 }}>KASB</h1><p style={{ color: '#D4AF78', fontSize: 10, fontWeight: 700, margin: 0, marginTop: 2 }}>NO CV WAHALA • IMAM VOUCH = CV • HALAL WORK ONLY</p></div>
       </div>
 
-      <div className="mx-4 mt-4 flex gap-2">
-        <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-3 py-1.5 rounded-full">● LIVE</span>
-        <span className="bg-[#D4AF78]/20 text-[#D4AF78] text-[10px] font-bold px-3 py-1.5 rounded-full">PRIVATE & SAFE</span>
+      <div style={{ margin: '16px 16px 0', display: 'flex', gap: 8 }}>
+        <span style={{ background: 'rgba(16,185,129,0.2)', color: '#6EE7B7', fontSize: 10, fontWeight: 700, padding: '6px 12px', borderRadius: 999 }}>● LIVE</span>
+        <span style={{ background: 'rgba(212,175,120,0.2)', color: '#D4AF78', fontSize: 10, fontWeight: 700, padding: '6px 12px', borderRadius: 999 }}>PRIVATE & SAFE</span>
       </div>
 
-      {/* === THE 3-WAY CHOICE YOU ASKED FOR === */}
-      <div className="mx-4 mt-4 bg-white rounded-[20px] p-2">
-        <p className="text-[11px] font-bold text-gray-400 px-2 pt-1 pb-2">WHO ARE YOU?</p>
-        <div className="grid grid-cols-3 gap-1.5">
-          <button onClick={() => setMode('seek')} className={`py-3 px-1 rounded-[14px] text-[11px] font-bold leading-tight ${mode === 'seek' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'}`}>🙋<br />I Need<br />A Job</button>
-          <button onClick={() => setMode('individual')} className={`py-3 px-1 rounded-[14px] text-[11px] font-bold leading-tight ${mode === 'individual' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'}`}>👤<br />Individual<br />Hiring</button>
-          <button onClick={() => setMode('organization')} className={`py-3 px-1 rounded-[14px] text-[11px] font-bold leading-tight ${mode === 'organization' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'}`}>🏢<br />Organization<br />Hiring</button>
+      <div style={{ margin: '16px 16px 0', background: '#fff', borderRadius: 20, padding: 8 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', padding: '4px 8px 8px', margin: 0 }}>WHO ARE YOU?</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
+          <button onClick={() => setMode('seek')} style={{ padding: '12px 4px', borderRadius: 14, border: 'none', fontSize: 11, fontWeight: 700, lineHeight: 1.3, cursor: 'pointer', background: mode === 'seek' ? '#000' : '#f3f4f6', color: mode === 'seek' ? '#fff' : '#4b5563' }}>🙋<br />I Need<br />A Job</button>
+          <button onClick={() => setMode('individual')} style={{ padding: '12px 4px', borderRadius: 14, border: 'none', fontSize: 11, fontWeight: 700, lineHeight: 1.3, cursor: 'pointer', background: mode === 'individual' ? '#000' : '#f3f4f6', color: mode === 'individual' ? '#fff' : '#4b5563' }}>👤<br />Individual<br />Hiring</button>
+          <button onClick={() => setMode('organization')} style={{ padding: '12px 4px', borderRadius: 14, border: 'none', fontSize: 11, fontWeight: 700, lineHeight: 1.3, cursor: 'pointer', background: mode === 'organization' ? '#000' : '#f3f4f6', color: mode === 'organization' ? '#fff' : '#4b5563' }}>🏢<br />Organization<br />Hiring</button>
         </div>
-        <p className="text-[11px] text-gray-500 px-2 pt-2 pb-1 leading-[1.5]">
+        <p style={{ fontSize: 11, color: '#6b7280', padding: '8px 8px 4px', lineHeight: 1.5, margin: 0 }}>
           {mode === 'seek' && 'You are looking for work. Show your skill, people will hire you.'}
           {mode === 'individual' && 'You are one person hiring — e.g. I need a driver, tailor, house help.'}
           {mode === 'organization' && 'You are hiring for a company, masjid, school or shop.'}
         </p>
       </div>
 
-      {/* === SEEKER FORM === */}
       {mode === 'seek' ? (
         <>
-          <div className="mx-4 mt-3 bg-white rounded-[22px] p-4">
-            <p className="font-extrabold text-[16px]">Share With Ummah</p>
-            <p className="text-[12px] text-gray-500 mt-1">Only good intentions. Allah sees your heart.</p>
-            <label className="block text-[11px] font-bold text-gray-400 mt-4">YOUR NAME</label>
-            <input value={sName} onChange={e => setSName(e.target.value)} placeholder="e.g. Musa Ibrahim" className={input} />
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">YOUR SKILL</label>
-            <input value={skill} onChange={e => setSkill(e.target.value)} placeholder="e.g. Driver, Tailor, Quran Teacher" className={input} />
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">EXPERIENCE</label>
-            <input value={exp} onChange={e => setExp(e.target.value)} placeholder="e.g. 3 years" className={input} />
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">LOCATION / CITY</label>
-            <input value={sLoc} onChange={e => setSLoc(e.target.value)} placeholder="e.g. Lagos" className={input} />
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">EXPECTED PAY & CURRENCY</label>
-            <div className="flex gap-2 mt-1.5">
-              <select value={sCurrency} onChange={e => setSCurrency(e.target.value)} className="bg-[#F7F3EC] border rounded-[14px] px-2 py-3 text-[13px] outline-none shrink-0"><option>NGN ₦</option><option>USD $</option><option>GBP £</option><option>EUR €</option><option>GHS GH₵</option><option>KES KSh</option><option>AED د.إ</option></select>
-              <input value={sPay} onChange={e => setSPay(e.target.value)} placeholder="e.g. 80k/month or Negotiable" className="flex-1 bg-[#F7F3EC] border rounded-[14px] px-3.5 py-3 text-[14px] outline-none min-w-0" />
+          <div style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 22, padding: 16 }}>
+            <p style={{ fontWeight: 800, fontSize: 16, margin: 0 }}>Share With Ummah</p>
+            <p style={{ fontSize: 12, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>Only good intentions. Allah sees your heart.</p>
+            <label style={labelStyle}>YOUR NAME</label>
+            <input value={sName} onChange={e => setSName(e.target.value)} placeholder="e.g. Musa Ibrahim" style={inputStyle} />
+            <label style={labelStyle}>YOUR SKILL</label>
+            <input value={skill} onChange={e => setSkill(e.target.value)} placeholder="e.g. Driver, Tailor, Quran Teacher" style={inputStyle} />
+            <label style={labelStyle}>EXPERIENCE</label>
+            <input value={exp} onChange={e => setExp(e.target.value)} placeholder="e.g. 3 years" style={inputStyle} />
+            <label style={labelStyle}>LOCATION / CITY</label>
+            <input value={sLoc} onChange={e => setSLoc(e.target.value)} placeholder="e.g. Lagos" style={inputStyle} />
+            <label style={labelStyle}>EXPECTED PAY & CURRENCY</label>
+            <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+              <select value={sCurrency} onChange={e => setSCurrency(e.target.value)} style={selectStyle}>{currencies.map(c => <option key={c}>{c}</option>)}</select>
+              <input value={sPay} onChange={e => setSPay(e.target.value)} placeholder="e.g. 80k/month or Negotiable" style={{ ...inputStyle, marginTop: 0, flex: 1, minWidth: 0 }} />
             </div>
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">WHATSAPP / CONTACT</label>
-            <input value={sContact} onChange={e => setSContact(e.target.value)} placeholder="080..." className={input} />
-            <button onClick={postSeeker} className="w-full mt-4 bg-[#0F2439] text-white font-extrabold py-3.5 rounded-full text-[14px]">POST →</button>
+            <label style={labelStyle}>WHATSAPP / CONTACT</label>
+            <input value={sContact} onChange={e => setSContact(e.target.value)} placeholder="080..." style={inputStyle} />
+            <button onClick={postSeeker} style={{ width: '100%', marginTop: 16, background: '#0F2439', color: '#fff', fontWeight: 800, padding: '14px', borderRadius: 999, border: 'none', fontSize: 14, cursor: 'pointer' }}>POST →</button>
           </div>
-          <p className="text-white font-bold px-5 mt-5 text-[14px]">People Looking For Work ({seekers.length})</p>
-          {seekers.length === 0 && <p className="text-center text-white/50 text-[13px] mt-3 px-6">No seekers yet. Be the first.</p>}
+          <p style={{ color: '#fff', fontWeight: 700, padding: '0 20px', marginTop: 20, fontSize: 14, marginBottom: 0 }}>People Looking For Work ({seekers.length})</p>
+          {seekers.length === 0 && <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 13, marginTop: 12, padding: '0 24px' }}>No seekers yet. Be the first.</p>}
           {seekers.map(s => (
-            <div key={s.id} className="mx-4 mt-3 bg-white rounded-[18px] p-4">
-              <p className="font-extrabold text-[14px]">{s.name} — {s.skill}</p>
-              <p className="text-[12px] text-gray-500 mt-0.5">{s.location} • {s.experience} • Expects {s.expected_pay}</p>
-              <a href={`https://wa.me/${s.contact}`} className="inline-block mt-3 bg-black text-white text-[12px] font-bold px-4 py-2 rounded-full">Hire {s.name} →</a>
+            <div key={s.id} style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 18, padding: 16 }}>
+              <p style={{ fontWeight: 800, fontSize: 14, margin: 0 }}>{s.name} — {s.skill}</p>
+              <p style={{ fontSize: 12, color: '#6b7280', marginTop: 2, marginBottom: 0 }}>{s.location} • {s.experience} • Expects {s.expected_pay}</p>
+              <a href={`https://wa.me/${s.contact}`} style={{ display: 'inline-block', marginTop: 12, background: '#000', color: '#fff', fontSize: 12, fontWeight: 700, padding: '8px 16px', borderRadius: 999, textDecoration: 'none' }}>Hire {s.name} →</a>
             </div>
           ))}
         </>
       ) : (
-        /* === HIRING FORM — INDIVIDUAL OR ORGANIZATION === */
         <>
-          <div className="mx-4 mt-3 bg-white rounded-[22px] p-4">
-            <p className="font-extrabold text-[16px]">{mode === 'organization' ? 'Share With Ummah — As Organization' : 'Share With Ummah — As Individual'}</p>
-            <p className="text-[12px] text-gray-500 mt-1">Only good intentions. Allah sees your heart.</p>
-
+          <div style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 22, padding: 16 }}>
+            <p style={{ fontWeight: 800, fontSize: 16, margin: 0 }}>{mode === 'organization' ? 'Share With Ummah — As Organization' : 'Share With Ummah — As Individual'}</p>
+            <p style={{ fontSize: 12, color: '#6b7280', marginTop: 4, marginBottom: 0 }}>Only good intentions. Allah sees your heart.</p>
             {mode === 'organization' ? (
               <>
-                <label className="block text-[11px] font-bold text-gray-400 mt-4">ORGANIZATION NAME</label>
-                <input value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="e.g. Al-Noor Bakery, Central Mosque School" className={input} />
-                <label className="block text-[11px] font-bold text-gray-400 mt-3">CONTACT PERSON NAME</label>
-                <input value={posterName} onChange={e => setPosterName(e.target.value)} placeholder="e.g. Manager Musa" className={input} />
+                <label style={labelStyle}>ORGANIZATION NAME</label>
+                <input value={orgName} onChange={e => setOrgName(e.target.value)} placeholder="e.g. Al-Noor Bakery, Central Mosque School" style={inputStyle} />
+                <label style={labelStyle}>CONTACT PERSON NAME</label>
+                <input value={posterName} onChange={e => setPosterName(e.target.value)} placeholder="e.g. Manager Musa" style={inputStyle} />
               </>
             ) : (
               <>
-                <label className="block text-[11px] font-bold text-gray-400 mt-4">YOUR NAME</label>
-                <input value={posterName} onChange={e => setPosterName(e.target.value)} placeholder="e.g. Musa — I need a driver" className={input} />
+                <label style={labelStyle}>YOUR NAME</label>
+                <input value={posterName} onChange={e => setPosterName(e.target.value)} placeholder="e.g. Musa — I need a driver" style={inputStyle} />
               </>
             )}
-
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">JOB TITLE</label>
-            <input value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. I need Driver – Lagos" className={input} />
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">JOB TYPE</label>
-            <div className="flex flex-wrap gap-2 mt-2">{['Full-time', 'Part-time', 'Remote', 'Contract'].map(t => (<button key={t} onClick={() => setJtype(t)} className={`px-3 py-2 rounded-full text-[11px] font-bold ${jtype === t ? 'bg-black text-white' : 'bg-gray-100'}`}>{t}</button>))}</div>
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">LOCATION / CITY</label>
-            <input value={loc} onChange={e => setLoc(e.target.value)} placeholder="e.g. Lagos" className={input} />
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">PAY & CURRENCY</label>
-            <div className="flex gap-2 mt-1.5">
-              <select value={currency} onChange={e => setCurrency(e.target.value)} className="bg-[#F7F3EC] border rounded-[14px] px-2 py-3 text-[13px] outline-none shrink-0"><option>NGN ₦</option><option>USD $</option><option>GBP £</option><option>EUR €</option><option>GHS GH₵</option><option>KES KSh</option><option>AED د.إ</option></select>
-              <input value={pay} onChange={e => setPay(e.target.value)} placeholder="e.g. ₦80k/month or Negotiable" className="flex-1 bg-[#F7F3EC] border rounded-[14px] px-3.5 py-3 text-[14px] outline-none min-w-0" />
+            <label style={labelStyle}>JOB TITLE</label>
+            <input value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. I need Driver – Lagos" style={inputStyle} />
+            <label style={labelStyle}>JOB TYPE</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>{['Full-time', 'Part-time', 'Remote', 'Contract'].map(t => (<button key={t} onClick={() => setJtype(t)} style={chip(jtype === t)}>{t}</button>))}</div>
+            <label style={labelStyle}>LOCATION / CITY</label>
+            <input value={loc} onChange={e => setLoc(e.target.value)} placeholder="e.g. Lagos" style={inputStyle} />
+            <label style={labelStyle}>PAY & CURRENCY</label>
+            <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+              <select value={currency} onChange={e => setCurrency(e.target.value)} style={selectStyle}>{currencies.map(c => <option key={c}>{c}</option>)}</select>
+              <input value={pay} onChange={e => setPay(e.target.value)} placeholder="e.g. ₦80k/month or Negotiable" style={{ ...inputStyle, marginTop: 0, flex: 1, minWidth: 0 }} />
             </div>
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">WHATSAPP / CONTACT</label>
-            <input value={contact} onChange={e => setContact(e.target.value)} placeholder="080..." className={input} />
-            <label className="block text-[11px] font-bold text-gray-400 mt-3">WRITE HERE... ALLAH IS LISTENING</label>
-            <textarea value={details} onChange={e => setDetails(e.target.value)} placeholder="What will the person do? Prayer break allowed?" className={input} />
-            <button onClick={postHiring} className="w-full mt-4 bg-[#0F2439] text-white font-extrabold py-3.5 rounded-full text-[14px]">POST →</button>
+            <label style={labelStyle}>WHATSAPP / CONTACT</label>
+            <input value={contact} onChange={e => setContact(e.target.value)} placeholder="080..." style={inputStyle} />
+            <label style={labelStyle}>WRITE HERE... ALLAH IS LISTENING</label>
+            <textarea value={details} onChange={e => setDetails(e.target.value)} placeholder="What will the person do? Prayer break allowed?" style={{ ...inputStyle, minHeight: 90 }} />
+            <button onClick={postHiring} style={{ width: '100%', marginTop: 16, background: '#0F2439', color: '#fff', fontWeight: 800, padding: '14px', borderRadius: 999, border: 'none', fontSize: 14, cursor: 'pointer' }}>POST →</button>
           </div>
 
-          <div className="px-4 mt-4 flex flex-wrap gap-2">{['All', 'Full-time', 'Part-time', 'Remote', 'Contract'].map(f => (<button key={f} onClick={() => setJobFilter(f)} className={`px-3.5 py-2 rounded-full text-[12px] font-bold ${jobFilter === f ? 'bg-white text-black' : 'bg-white/10 text-white'}`}>{f}</button>))}</div>
-          <p className="text-white font-bold px-5 mt-4 text-[14px]">Open Jobs ({filteredJobs.length})</p>
-          {filteredJobs.length === 0 && <p className="text-center text-white/50 text-[13px] mt-3 px-6">No jobs yet. Post the first one.</p>}
+          <div style={{ padding: '16px 16px 0', display: 'flex', flexWrap: 'wrap', gap: 8 }}>{['All', 'Full-time', 'Part-time', 'Remote', 'Contract'].map(f => (<button key={f} onClick={() => setJobFilter(f)} style={filterChip(jobFilter === f)}>{f}</button>))}</div>
+          <p style={{ color: '#fff', fontWeight: 700, padding: '0 20px', marginTop: 16, fontSize: 14, marginBottom: 0 }}>Open Jobs ({filteredJobs.length})</p>
+          {filteredJobs.length === 0 && <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 13, marginTop: 12, padding: '0 24px' }}>No jobs yet. Post the first one.</p>}
           {filteredJobs.map(j => (
-            <div key={j.id} className="mx-4 mt-3 bg-white rounded-[18px] p-4">
-              <p className="font-extrabold text-[14px]">{j.role_title}</p>
-              <p className="text-[12px] text-gray-500 mt-0.5">{j.org_name} • {j.location} • {j.job_type} • {j.pay}</p>
-              <p className="text-[13px] leading-[1.6] mt-2">{j.details}</p>
-              <p className="text-[11px] text-emerald-700 font-bold mt-2">✓ Prayer break allowed • Halal environment</p>
-              <div className="flex gap-2 mt-3">
-                <a href={`https://wa.me/${j.contact}`} className="flex-1 text-center bg-emerald-600 text-white text-[12px] font-bold py-2.5 rounded-full">Apply →</a>
-                <button onClick={() => setSaved(prev => prev.includes(j.id) ? prev.filter(id => id !== j.id) : [...prev, j.id])} className="px-3 py-2.5 bg-gray-100 rounded-full text-[12px] font-bold">{saved.includes(j.id) ? '✓ Saved' : '🔖 Save'}</button>
+            <div key={j.id} style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 18, padding: 16 }}>
+              <p style={{ fontWeight: 800, fontSize: 14, margin: 0 }}>{j.role_title}</p>
+              <p style={{ fontSize: 12, color: '#6b7280', marginTop: 2, marginBottom: 0 }}>{j.org_name} • {j.location} • {j.job_type} • {j.pay}</p>
+              <p style={{ fontSize: 13, lineHeight: 1.6, marginTop: 8, marginBottom: 0 }}>{j.details}</p>
+              <p style={{ fontSize: 11, color: '#047857', fontWeight: 700, marginTop: 8, marginBottom: 0 }}>✓ Prayer break allowed • Halal environment</p>
+              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                <a href={`https://wa.me/${j.contact}`} style={{ flex: 1, textAlign: 'center', background: '#059669', color: '#fff', fontSize: 12, fontWeight: 700, padding: '10px', borderRadius: 999, textDecoration: 'none' }}>Apply →</a>
+                <button onClick={() => setSaved(prev => prev.includes(j.id) ? prev.filter(id => id !== j.id) : [...prev, j.id])} style={{ padding: '10px 12px', background: '#f3f4f6', border: 'none', borderRadius: 999, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>{saved.includes(j.id) ? '✓ Saved' : '🔖 Save'}</button>
               </div>
             </div>
           ))}
@@ -191,4 +189,4 @@ export default function KasbPage({ onBack }: { onBack: () => void }) {
       )}
     </div>
   );
-      }
+}

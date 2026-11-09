@@ -1,11 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 * { box-sizing: border-box; }
-html, body { overflow-x: hidden; background: #0F2439; }
-body { margin: 0; font-family: Inter, system-ui, sans-serif; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { scrollbar-width: none; }
-.font-serif-lux { font-family: Georgia, serif; }
+html, body { margin: 0; padding: 0; overflow-x: hidden; background: #0F2439; }
+body { font-family: Inter, system-ui, sans-serif; }
 input, textarea, select { font-size: 16px !important; }

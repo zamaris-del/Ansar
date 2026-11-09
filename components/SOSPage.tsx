@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { notifyAll } from '../../lib/notify';
-import { openWhatsApp, IMAM_WHATSAPP, IMAM_NAME, IMAM_LABEL } from '../lib/whatsapp';
+import { openWhatsApp, IMAM_WHATSAPP, IMAM_NAME, IMAM_LABEL } from '../../lib/whatsapp';
 
 export default function SOSPage({ onBack }: { onBack: () => void }) {
   const [category, setCategory] = useState('Stranded / No Food / No Shelter');
@@ -16,10 +16,7 @@ export default function SOSPage({ onBack }: { onBack: () => void }) {
     if (!what || !where) return alert('Please tell us what happened and where you are. We need this to reach you.');
     const { error } = await supabase.from('sos_alerts').insert([{ category, description: what, location_text: where, safe_to_call: safeToCall, contact, gender, status: 'ACTIVE' }]);
     if (error) return alert(error.message);
-
     await notifyAll('sos', `SOS: ${category} in ${where}`, `${what.slice(0, 80)} - Safe to call: ${safeToCall}`, 'sos');
-
-    // WhatsApp to Imam immediately
     const msg = `SOS FROM ANSAR\n\nCategory: ${category}\nLocation: ${where}\nDetails: ${what}\nSafe to call: ${safeToCall}\nGender: ${gender}\nContact: ${contact || 'Not provided'}`;
     openWhatsApp(IMAM_WHATSAPP, msg);
     setSent(true);
@@ -45,14 +42,11 @@ export default function SOSPage({ onBack }: { onBack: () => void }) {
         <button onClick={onBack} style={{ width: 40, height: 40, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', color: '#fff', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>←</button>
         <div><h1 style={{ color: '#fff', fontWeight: 800, margin: 0, lineHeight: 1.2 }}>SOS - I NEED HELP NOW</h1><p style={{ color: '#FCA5A5', fontSize: 11, fontWeight: 700, margin: 0, marginTop: 3 }}>WE WILL REACH YOU AS SOON AS POSSIBLE</p></div>
       </div>
-
       <div style={{ margin: '16px 16px 0', background: '#fff', borderRadius: 18, padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <div><p style={{ fontWeight: 800, fontSize: 14, margin: 0 }}>Talk To Support On WhatsApp</p><p style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>{IMAM_NAME}</p><p style={{ fontSize: 11, color: '#047857', fontWeight: 700, marginTop: 2 }}>● {IMAM_LABEL}</p></div>
         <button onClick={() => openWhatsApp(IMAM_WHATSAPP, 'Assalamu Alaikum, I need help from ANSAR.')} style={{ background: '#25D366', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 999, fontWeight: 700, fontSize: 12, whiteSpace: 'nowrap', cursor: 'pointer' }}>WhatsApp →</button>
       </div>
-
       <div style={{ margin: '12px 16px 0', background: '#FEF2F2', borderRadius: 18, padding: 14 }}><p style={{ fontSize: 13, fontWeight: 700, margin: 0 }}>Private And Safe</p><p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6, marginTop: 4 }}>Your location is shared only with verified responders. It is automatically deleted after 24 hours. You can type, you do not need to talk.</p></div>
-
       <div style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 22, padding: 16 }}>
         <p style={{ fontWeight: 800, margin: 0 }}>What Happened?</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>{['Domestic Violence', 'Suicide Thought', 'Thrown Out Of House', 'Stranded / No Food / No Shelter', 'Medical Emergency'].map(c => <button key={c} onClick={() => setCategory(c)} style={chip(category === c)}>{c}</button>)}</div>
@@ -71,4 +65,4 @@ export default function SOSPage({ onBack }: { onBack: () => void }) {
       </div>
     </div>
   );
-      }
+                   }

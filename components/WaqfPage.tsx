@@ -59,4 +59,4 @@ export default function WaqfPage({ onBack }: { onBack: () => void }) {
       </div>
     </div>
   );
-                                                                                           }
+      }

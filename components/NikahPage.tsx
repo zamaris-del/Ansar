@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
-import { notifyAll } from '../../lib/notify';
-import { openWhatsApp, IMAM_WHATSAPP } from '../../lib/whatsapp';
+import { supabase } from '../lib/supabase';
+import { notifyAll } from '../lib/notify';
+import { openWhatsApp, IMAM_WHATSAPP } from '../lib/whatsapp';
 
 export default function NikahPage({ onBack }: { onBack: () => void }) {
   const [gender, setGender] = useState('Brother');
@@ -74,4 +74,4 @@ export default function NikahPage({ onBack }: { onBack: () => void }) {
       ))}
     </div>
   );
-        }
+                   }

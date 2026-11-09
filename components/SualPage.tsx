@@ -1,51 +1,43 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { notifyAll } from '../lib/notify';
 
-export default function SualPage({ onBack }: any) {
-  const [qs, setQs] = useState<any[]>([]);
-  const [question, setQuestion] = useState('');
-  const [category, setCategory] = useState('Fiqh');
-  const [isAnon, setIsAnon] = useState(true);
-  const [name, setName] = useState('');
-  const load = async () => {
-    const { data } = await supabase.from('sual_questions').select('*').order('created_at', { ascending: false });
-    if (data) setQs(data);
-  };
+export default function SualPage({ onBack }: { onBack: () => void }) {
+  const [question, setQuestion] = useState(''); const [category, setCategory] = useState('General'); const [search, setSearch] = useState('');
+  const [questions, setQuestions] = useState<any[]>([]); const [upvoted, setUpvoted] = useState<string[]>([]);
+  const load = async () => { const { data } = await supabase.from('sual_questions').select('*').order('created_at', { ascending: false }).limit(30); setQuestions(data || []); };
   useEffect(() => { load(); }, []);
-  const send = async () => {
-    if (!question.trim()) return;
-    await supabase.from('sual_questions').insert({ question: question.trim(), category, is_anonymous: isAnon, asker_name: isAnon ? 'Anonymous' : name || 'Anonymous' });
-    setQuestion(''); load();
+  const post = async () => {
+    if (!question.trim()) return alert('Please write your question first.');
+    const { error } = await supabase.from('sual_questions').insert([{ question, category, anonymous: true }]);
+    if (error) return alert(error.message);
+    await notifyAll('general', `New Question: ${category}`, question.slice(0, 80), 'sual');
+    alert('Your question has been posted anonymously.'); setQuestion(''); load();
   };
+  const filtered = questions.filter(q => q.question.toLowerCase().includes(search.toLowerCase()));
   return (
-    <div className="min-h-screen bg-[#F9F7F4] pb-24">
-      <header className="sticky top-0 bg-white p-4 border-b flex items-center gap-3 z-10"><button onClick={onBack} className="bg-black/10 px-4 py-2 rounded-full text-[11px] font-bold">← Back</button><span className="font-black text-[13px]">❓ SU'AL - Ask Without Shame</span></header>
-      <div className="p-4">
-        <div className="bg-[#0A1930] rounded-2xl p-4 text-white">
-          <p className="text-[11px] text-[#D4AF78] font-bold tracking-widest">NO SHAME • NO NAME • NO JUDGMENT</p>
-          <p className="text-[12px] text-white/70 mt-2 leading-6">Ask anything. Doubt, Fiqh, family wahala. Only kind scholars go answer. Harsh answer = ban.</p>
-        </div>
-        <div className="bg-white rounded-2xl border p-4 mt-4">
-          <div className="flex gap-2">
-            {['Fiqh', 'Doubt', 'Crisis'].map(c => <button key={c} onClick={() => setCategory(c)} className={`px-4 py-2 rounded-full text-[11px] font-bold ${category === c ? (c === 'Fiqh' ? 'bg-green-600 text-white' : c === 'Doubt' ? 'bg-yellow-500 text-black' : 'bg-red-600 text-white') : 'bg-gray-100'}`}>{c === 'Fiqh' ? '🟢 Fiqh' : c === 'Doubt' ? '🟡 Doubt' : '🔴 Crisis'}</button>)}
-          </div>
-          <label className="flex items-center gap-2 mt-3 text-[12px] font-bold"><input type="checkbox" checked={isAnon} onChange={e => setIsAnon(e.target.checked)} className="w-4 h-4" /> Ask Anonymous</label>
-          {!isAnon && <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full mt-2 p-3 rounded-xl border text-[13px]" />}
-          <textarea value={question} onChange={e => setQuestion(e.target.value)} rows={3} placeholder="Ask your question... e.g. I dey doubt my Iman, wetin I go do?" className="w-full mt-3 p-3 rounded-xl border text-[13px]" />
-          <button onClick={send} className="w-full mt-2 bg-[#0A1930] text-[#D4AF78] py-3.5 rounded-full text-[11px] font-black">ASK NOW →</button>
-        </div>
-        <div className="mt-4 space-y-3">
-          {qs.map(q => (
-            <div key={q.id} className="bg-white rounded-2xl border p-4">
-              <div className="flex justify-between"><span className={`text-[10px] font-black px-2 py-1 rounded-full ${q.category === 'Fiqh' ? 'bg-green-100 text-green-700' : q.category === 'Doubt' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>{q.category}</span><span className="text-[10px] text-gray-400">{new Date(q.created_at).toLocaleDateString()}</span></div>
-              <p className="font-bold text-[13px] mt-2">Q: {q.question}</p>
-              <p className="text-[11px] text-gray-500">By: {q.is_anonymous ? 'Anonymous' : q.asker_name}</p>
-              {q.answer ? <div className="mt-3 bg-green-50 border-l-4 border-green-600 p-3 rounded-r-xl"><p className="text-[11px] font-black text-green-700">Answer by {q.scholar_name || 'Scholar'}:</p><p className="text-[13px] mt-1">{q.answer}</p></div> : <p className="text-[11px] text-orange-600 mt-3 font-bold">⏳ Waiting for kind scholar to answer...</p>}
-            </div>
-          ))}
-          {qs.length === 0 && <p className="text-center text-gray-400 text-[12px] py-8">No question yet. Be first to ask.</p>}
-        </div>
+    <div className="min-h-screen bg-[#0F2439] max-w-[430px] mx-auto pb-[120px]">
+      <div className="px-5 pt-4 flex items-center gap-3"><button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full text-white">←</button><div><h1 className="text-white font-extrabold">SU'AL — Ask Without Shame</h1><p className="text-[#D4AF78] text-[11px] font-bold">SCHOLARS AND KNOWLEDGEABLE MEMBERS ANSWER</p></div></div>
+      <div className="mx-4 mt-4 bg-white rounded-[24px] p-5">
+        <p className="font-extrabold">Ask Your Question</p>
+        <div className="flex flex-wrap gap-2 mt-3">{['General', 'Fiqh', 'Marriage', 'Work', 'Mental Health', 'Quran'].map(c => (<button key={c} onClick={() => setCategory(c)} className={`px-3 py-2 rounded-full text-[12px] font-bold ${category === c ? 'bg-black text-white' : 'bg-gray-100'}`}>{c}</button>))}</div>
+        <textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ask about Islam, life, marriage, work, or anything you are struggling with..." className="w-full mt-4 bg-[#F7F3EC] border rounded-[16px] p-4 min-h-[110px] outline-none" />
+        <button onClick={post} className="w-full mt-3 bg-[#0F2439] text-white font-extrabold py-4 rounded-full">ASK QUESTION →</button>
+        <p className="text-[11px] text-gray-400 text-center mt-2">Anonymous by default. No judgement.</p>
       </div>
+      <input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Search questions..." className="mx-4 mt-4 w-[calc(100%-32px)] bg-white rounded-full px-4 py-3.5 text-[14px] outline-none" />
+      {filtered.map(q => (
+        <div key={q.id} className="mx-4 mt-3 bg-white rounded-[20px] p-4">
+          <div className="flex justify-between"><span className="text-[10px] font-bold bg-[#FFF6E0] text-[#B9975B] px-2 py-1 rounded-full">{q.category}</span><span className="text-[10px] text-gray-400">Anonymous</span></div>
+          <p className="text-[14px] mt-2">{q.question}</p>
+          <div className="flex gap-2 mt-3">
+            <button onClick={() => setUpvoted(prev => prev.includes(q.id) ? prev.filter(id => id !== q.id) : [...prev, q.id])} className={`px-3 py-1.5 rounded-full text-[12px] font-bold ${upvoted.includes(q.id) ? 'bg-[#D4AF78] text-black' : 'bg-gray-100'}`}>👍 {upvoted.includes(q.id) ? 'Upvoted' : 'Upvote'} • {upvoted.includes(q.id) ? 1 : 0}</button>
+            <button className="px-3 py-1.5 bg-gray-100 rounded-full text-[12px] font-bold">💬 Answer</button>
+            <button className="px-3 py-1.5 bg-gray-100 rounded-full text-[12px] font-bold">🔖 Save</button>
+          </div>
+          <p className="text-[11px] text-emerald-700 bg-emerald-50 p-2.5 rounded-[12px] mt-3">✓ Scholar Answer (Coming Soon): Our Imams will answer verified questions with evidence from Quran and Sunnah.</p>
+        </div>
+      ))}
     </div>
   );
-                                                                                                                      }
+}

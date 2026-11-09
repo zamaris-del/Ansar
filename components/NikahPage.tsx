@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { notifyAll } from '../../lib/notify';
-import { openWhatsApp, IMAM_WHATSAPP } from '../lib/whatsapp';
+import { openWhatsApp, IMAM_WHATSAPP } from '../../lib/whatsapp';
 
 export default function NikahPage({ onBack }: { onBack: () => void }) {
   const [gender, setGender] = useState('Brother');
@@ -44,12 +44,10 @@ export default function NikahPage({ onBack }: { onBack: () => void }) {
         <button onClick={onBack} style={{ width: 40, height: 40, flexShrink: 0, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', color: '#fff', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>←</button>
         <div><h1 style={{ color: '#fff', fontWeight: 800, fontSize: 18, margin: 0, lineHeight: 1.2 }}>NIKAH</h1><p style={{ color: '#D4AF78', fontSize: 11, fontWeight: 700, margin: 0, marginTop: 3 }}>MARRIAGE WITH A WALI • NO FITNAH</p></div>
       </div>
-
       <div style={{ margin: '16px 16px 0', background: '#FDF2E9', borderRadius: 18, padding: 16 }}>
         <p style={{ fontWeight: 800, fontSize: 14, margin: 0 }}>How Nikah Works Here</p>
         <p style={{ fontSize: 13, color: '#4b5563', lineHeight: 1.6, marginTop: 6, marginBottom: 0 }}>1. Create a profile with your Wali. 2. Someone shows interest. 3. We connect them to your Wali, not directly to you. 4. Families talk. No private chatting.</p>
       </div>
-
       <div style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 22, padding: 16 }}>
         <p style={{ fontWeight: 800, fontSize: 16, margin: 0 }}>Create A Halal Profile</p>
         <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>{['Brother', 'Sister'].map(g => (<button key={g} onClick={() => setGender(g)} style={{ flex: 1, padding: 12, borderRadius: 999, border: 'none', fontWeight: 700, fontSize: 14, cursor: 'pointer', background: gender === g ? '#000' : '#f3f4f6', color: gender === g ? '#fff' : '#374151' }}>{g}</button>))}</div>
@@ -63,7 +61,6 @@ export default function NikahPage({ onBack }: { onBack: () => void }) {
         <button onClick={createProfile} style={{ width: '100%', marginTop: 16, background: '#0F2439', color: '#fff', fontWeight: 800, padding: 14, borderRadius: 999, border: 'none', fontSize: 14, cursor: 'pointer' }}>Create Profile →</button>
         <p style={{ fontSize: 11, color: '#9ca3af', textAlign: 'center', marginTop: 10 }}>Need help? <span onClick={() => openWhatsApp(IMAM_WHATSAPP, 'Assalamu Alaikum, I need guidance on Nikah from ANSAR.')} style={{ color: '#047857', fontWeight: 700, cursor: 'pointer' }}>Chat with support on WhatsApp</span></p>
       </div>
-
       <p style={{ color: '#fff', fontWeight: 700, padding: '0 20px', marginTop: 16 }}>Profiles ({profiles.length})</p>
       {profiles.map((p: any) => (
         <div key={p.id} style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 18, padding: 16 }}>
@@ -77,4 +74,4 @@ export default function NikahPage({ onBack }: { onBack: () => void }) {
       ))}
     </div>
   );
-                                                }
+        }

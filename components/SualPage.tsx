@@ -3,47 +3,90 @@ import { supabase } from '../lib/supabase';
 import { notifyAll } from '../lib/notify';
 
 export default function SualPage({ onBack }: { onBack: () => void }) {
-  const [question, setQuestion] = useState(''); const [category, setCategory] = useState('General'); const [search, setSearch] = useState('');
-  const [questions, setQuestions] = useState<any[]>([]); const [upvoted, setUpvoted] = useState<string[]>([]);
-  const load = async () => { const { data } = await supabase.from('sual_questions').select('*').order('created_at', { ascending: false }).limit(30); setQuestions(data || []); };
+  const [question, setQuestion] = useState('');
+  const [category, setCategory] = useState('General');
+  const [search, setSearch] = useState('');
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [upvoted, setUpvoted] = useState<string[]>([]);
+
+  const load = async () => {
+    const { data } = await supabase.from('sual_questions').select('*').order('created_at', { ascending: false }).limit(30);
+    setQuestions(data || []);
+  };
   useEffect(() => { load(); }, []);
+
   const post = async () => {
     if (!question.trim()) return alert('Please write your question first.');
     const { error } = await supabase.from('sual_questions').insert([{ question, category, anonymous: true }]);
     if (error) return alert(error.message);
     await notifyAll('general', `New Question: ${category}`, question.slice(0, 80), 'sual');
-    alert('Your question has been posted anonymously.'); setQuestion(''); load();
+    alert('Your question has been posted anonymously.');
+    setQuestion(''); load();
   };
+
   const filtered = questions.filter(q => q.question.toLowerCase().includes(search.toLowerCase()));
+  const cats = ['General', 'Fiqh', 'Marriage', 'Work', 'Mental Health', 'Quran'];
+
   return (
-    <div className="min-h-screen bg-[#0F2439] w-full max-w-[430px] mx-auto pb-[110px] overflow-x-hidden">
-      <div className="px-4 pt-4 flex items-center gap-3"><button onClick={onBack} className="w-10 h-10 shrink-0 bg-white/10 rounded-full text-white">←</button><div className="min-w-0"><h1 className="text-white font-extrabold text-[18px] leading-tight">SU'AL</h1><p className="text-[#D4AF78] text-[10px] font-bold tracking-wide mt-0.5">ASK WITHOUT SHAME • ANSWERED WITH EVIDENCE</p></div></div>
-
-      <div className="mx-4 mt-4 bg-gradient-to-br from-[#D4AF78] to-[#B9975B] rounded-[22px] p-4">
-        <p className="text-[11px] font-bold tracking-widest text-black/60">HADITH OF THE DAY</p>
-        <p className="text-black font-bold text-[14px] leading-[1.6] mt-1.5">"The best of you are those who learn the Qur'an and teach it." — Bukhari</p>
+    <div style={{ minHeight: '100vh', background: '#0F2439', width: '100%', maxWidth: 430, margin: '0 auto', paddingBottom: 110, overflowX: 'hidden', boxSizing: 'border-box' }}>
+      {/* Header */}
+      <div style={{ padding: '16px 16px 0', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={onBack} style={{ width: 40, height: 40, flexShrink: 0, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', color: '#fff', fontSize: 18, cursor: 'pointer' }}>←</button>
+        <div style={{ minWidth: 0 }}>
+          <h1 style={{ color: '#fff', fontWeight: 800, fontSize: 18, lineHeight: 1.2, margin: 0 }}>SU'AL</h1>
+          <p style={{ color: '#D4AF78', fontSize: 10, fontWeight: 700, letterSpacing: 1, marginTop: 2, margin: 0 }}>ASK WITHOUT SHAME • ANSWERED WITH EVIDENCE</p>
+        </div>
       </div>
 
-      <div className="mx-4 mt-3 bg-white rounded-[22px] p-4">
-        <p className="font-extrabold text-[16px]">Ask Your Question</p>
-        <p className="text-[12px] text-gray-500 leading-[1.6] mt-1">Your name will never show. Ask about Islam, life, marriage, work, or anything you are struggling with.</p>
-        <div className="flex flex-wrap gap-2 mt-3">{['General', 'Fiqh', 'Marriage', 'Work', 'Mental Health', 'Quran'].map(c => (<button key={c} onClick={() => setCategory(c)} className={`px-3.5 py-2 rounded-full text-[12px] font-bold ${category === c ? 'bg-black text-white' : 'bg-gray-100 text-gray-700'}`}>{c}</button>))}</div>
-        <textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="e.g. Is it allowed to...? How do I...?" className="w-full mt-3 bg-[#F7F3EC] border border-[#E8DDC8] rounded-[14px] p-3.5 min-h-[110px] outline-none text-[14px] leading-[1.6]" />
-        <button onClick={post} className="w-full mt-3 bg-[#0F2439] text-white font-extrabold py-3.5 rounded-full text-[14px]">Ask Question →</button>
-        <p className="text-[11px] text-gray-400 text-center mt-2">Anonymous by default • No judgement • Scholars answer</p>
+      {/* Hadith */}
+      <div style={{ margin: '16px 16px 0', background: 'linear-gradient(135deg, #D4AF78, #B9975B)', borderRadius: 22, padding: 16 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: 'rgba(0,0,0,0.6)', margin: 0 }}>HADITH OF THE DAY</p>
+        <p style={{ color: '#000', fontWeight: 700, fontSize: 14, lineHeight: 1.6, marginTop: 6, marginBottom: 0 }}>"The best of you are those who learn the Qur'an and teach it." — Bukhari</p>
       </div>
 
-      <div className="px-4 mt-4"><input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Search questions..." className="w-full bg-white rounded-full px-4 py-3 text-[14px] outline-none" /></div>
+      {/* Ask Box */}
+      <div style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 22, padding: 16 }}>
+        <p style={{ fontWeight: 800, fontSize: 16, margin: 0 }}>Ask Your Question</p>
+        <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6, marginTop: 4, marginBottom: 0 }}>Your name will never show. Ask about Islam, life, marriage, work, or anything you are struggling with.</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+          {cats.map(c => (
+            <button key={c} onClick={() => setCategory(c)} style={{ padding: '8px 14px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer', background: category === c ? '#000' : '#f3f4f6', color: category === c ? '#fff' : '#374151' }}>{c}</button>
+          ))}
+        </div>
+        <textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="e.g. Is it allowed to...? How do I...?" style={{ width: '100%', marginTop: 12, background: '#F7F3EC', border: '1px solid #E8DDC8', borderRadius: 14, padding: 14, minHeight: 110, outline: 'none', fontSize: 14, lineHeight: 1.6, boxSizing: 'border-box', fontFamily: 'inherit' }} />
+        <button onClick={post} style={{ width: '100%', marginTop: 12, background: '#0F2439', color: '#fff', fontWeight: 800, padding: '14px', borderRadius: 999, border: 'none', fontSize: 14, cursor: 'pointer' }}>Ask Question →</button>
+        <p style={{ fontSize: 11, color: '#9ca3af', textAlign: 'center', marginTop: 8, marginBottom: 0 }}>Anonymous by default • No judgement • Scholars answer</p>
+      </div>
 
-      <p className="px-5 mt-4 text-white font-bold text-[14px]">Recent Questions {filtered.length > 0 && `(${filtered.length})`}</p>
-      {filtered.length === 0 && <div className="mx-4 mt-3 bg-white/5 border border-white/10 rounded-[18px] p-5 text-center"><p className="text-[28px]">❓</p><p className="text-white font-bold text-[14px] mt-2">No questions yet</p><p className="text-white/50 text-[12px] leading-[1.6] mt-1">Be the first to ask. Someone else is probably wondering the same thing.</p></div>}
+      {/* Search */}
+      <div style={{ padding: '16px 16px 0' }}>
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Search questions..." style={{ width: '100%', background: '#fff', borderRadius: 999, padding: '12px 16px', fontSize: 14, outline: 'none', border: 'none', boxSizing: 'border-box' }} />
+      </div>
+
+      <p style={{ padding: '0 20px', marginTop: 16, color: '#fff', fontWeight: 700, fontSize: 14, marginBottom: 0 }}>Recent Questions {filtered.length > 0 && `(${filtered.length})`}</p>
+
+      {filtered.length === 0 && (
+        <div style={{ margin: '12px 16px 0', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 18, padding: 20, textAlign: 'center' }}>
+          <p style={{ fontSize: 28, margin: 0 }}>❓</p>
+          <p style={{ color: '#fff', fontWeight: 700, fontSize: 14, marginTop: 8, marginBottom: 0 }}>No questions yet</p>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, lineHeight: 1.6, marginTop: 4, marginBottom: 0 }}>Be the first to ask. Someone else is probably wondering the same thing.</p>
+        </div>
+      )}
+
       {filtered.map(q => (
-        <div key={q.id} className="mx-4 mt-3 bg-white rounded-[18px] p-4">
-          <div className="flex justify-between items-center gap-2"><span className="text-[10px] font-bold bg-[#FFF6E0] text-[#B9975B] px-2.5 py-1 rounded-full">{q.category}</span><span className="text-[10px] text-gray-400">Anonymous • Just now</span></div>
-          <p className="text-[14px] leading-[1.65] mt-2.5 text-gray-800">{q.question}</p>
-          <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-gray-100"><button onClick={() => setUpvoted(prev => prev.includes(q.id) ? prev.filter(id => id !== q.id) : [...prev, q.id])} className={`px-3 py-2 rounded-full text-[12px] font-bold ${upvoted.includes(q.id) ? 'bg-[#D4AF78] text-black' : 'bg-gray-100'}`}>👍 {upvoted.includes(q.id) ? 'Upvoted' : 'Upvote'}</button><button className="px-3 py-2 bg-gray-100 rounded-full text-[12px] font-bold">💬 Answer</button><button className="px-3 py-2 bg-gray-100 rounded-full text-[12px] font-bold">🔖 Save</button></div>
+        <div key={q.id} style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 18, padding: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, background: '#FFF6E0', color: '#B9975B', padding: '4px 10px', borderRadius: 999 }}>{q.category}</span>
+            <span style={{ fontSize: 10, color: '#9ca3af' }}>Anonymous • Just now</span>
+          </div>
+          <p style={{ fontSize: 14, lineHeight: 1.65, marginTop: 10, color: '#1f2937', marginBottom: 0 }}>{q.question}</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12, paddingTop: 12, borderTop: '1px solid #f3f4f6' }}>
+            <button onClick={() => setUpvoted(prev => prev.includes(q.id) ? prev.filter(id => id !== q.id) : [...prev, q.id])} style={{ padding: '8px 12px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer', background: upvoted.includes(q.id) ? '#D4AF78' : '#f3f4f6', color: upvoted.includes(q.id) ? '#000' : '#000' }}>👍 {upvoted.includes(q.id) ? 'Upvoted' : 'Upvote'}</button>
+            <button style={{ padding: '8px 12px', background: '#f3f4f6', border: 'none', borderRadius: 999, fontSize: 12, fontWeight: 700 }}>💬 Answer</button>
+            <button style={{ padding: '8px 12px', background: '#f3f4f6', border: 'none', borderRadius: 999, fontSize: 12, fontWeight: 700 }}>🔖 Save</button>
+          </div>
         </div>
       ))}
     </div>
   );
-}
+      }

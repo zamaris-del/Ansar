@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
-import { notifyAll } from '../../lib/notify';
-import { openWhatsApp, IMAM_WHATSAPP, IMAM_NAME, IMAM_LABEL } from '../../lib/whatsapp';
+import { supabase } from '../lib/supabase';
+import { notifyAll } from '../lib/notify';
+import { openWhatsApp, IMAM_WHATSAPP, IMAM_NAME, IMAM_LABEL } from '../lib/whatsapp';
 
 export default function MasjidPulsePage({ onBack }: { onBack: () => void }) {
   const [masjid, setMasjid] = useState('');
@@ -64,4 +64,4 @@ export default function MasjidPulsePage({ onBack }: { onBack: () => void }) {
       ))}
     </div>
   );
-          }
+      }

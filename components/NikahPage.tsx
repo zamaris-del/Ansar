@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { notifyAll } from '../lib/notify';
+import { openWhatsApp, IMAM_WHATSAPP } from '../lib/whatsapp';
 
 export default function NikahPage({ onBack }: { onBack: () => void }) {
   const [gender, setGender] = useState('Brother');
@@ -23,8 +24,14 @@ export default function NikahPage({ onBack }: { onBack: () => void }) {
     const { error } = await supabase.from('nikah_profiles').insert([{ gender, age: parseInt(age), city, looking_for: lookingFor, wali_name: waliName, wali_contact: waliContact, about }]);
     if (error) return alert(error.message);
     await notifyAll('nikah', `New Nikah Profile: ${gender} in ${city}`, `Looking for: ${lookingFor}`, 'nikah');
-    alert('Your profile has been created. We will connect interested families to your Wali, not directly to you.');
+    alert('Your profile has been created. Interested families will be connected to your Wali, not directly to you.');
     setAge(''); setCity(''); setWaliName(''); setWaliContact(''); setAbout(''); load();
+  };
+
+  const showInterest = async (p: any) => {
+    const msg = `Assalamu Alaikum, I saw a Nikah profile on ANSAR (${p.gender}, Age ${p.age}, ${p.city}). I am interested and would like my family to speak with you as Wali. My name is: `;
+    openWhatsApp(p.wali_contact, msg);
+    await supabase.from('nikah_interests').insert([{ profile_id: p.id, wali_contact: p.wali_contact, status: 'Pending' }]);
   };
 
   const inputStyle: React.CSSProperties = { width: '100%', marginTop: 6, background: '#F7F3EC', border: '1px solid #E8DDC8', borderRadius: 14, padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
@@ -51,9 +58,10 @@ export default function NikahPage({ onBack }: { onBack: () => void }) {
         <label style={labelStyle}>WHAT ARE YOU LOOKING FOR?</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>{['Practising Muslim', 'Student of Knowledge', 'Working Professional', 'Ready Now', 'Ready Within 1 Year'].map(o => (<button key={o} onClick={() => setLookingFor(o)} style={chip(lookingFor === o)}>{o}</button>))}</div>
         <label style={labelStyle}>WALI NAME</label><input value={waliName} onChange={e => setWaliName(e.target.value)} placeholder="e.g. Father / Uncle" style={inputStyle} />
-        <label style={labelStyle}>WALI CONTACT (REQUIRED)</label><input value={waliContact} onChange={e => setWaliContact(e.target.value)} placeholder="Phone / WhatsApp" style={inputStyle} />
+        <label style={labelStyle}>WALI CONTACT (REQUIRED)</label><input value={waliContact} onChange={e => setWaliContact(e.target.value)} placeholder="0704..." style={inputStyle} />
         <label style={labelStyle}>ABOUT YOU</label><textarea value={about} onChange={e => setAbout(e.target.value)} placeholder="Briefly describe yourself, your work, and your deen..." style={{ ...inputStyle, minHeight: 80 }} />
         <button onClick={createProfile} style={{ width: '100%', marginTop: 16, background: '#0F2439', color: '#fff', fontWeight: 800, padding: 14, borderRadius: 999, border: 'none', fontSize: 14, cursor: 'pointer' }}>Create Profile →</button>
+        <p style={{ fontSize: 11, color: '#9ca3af', textAlign: 'center', marginTop: 10 }}>Need help? <span onClick={() => openWhatsApp(IMAM_WHATSAPP, 'Assalamu Alaikum, I need guidance on Nikah from ANSAR.')} style={{ color: '#047857', fontWeight: 700, cursor: 'pointer' }}>Chat with support on WhatsApp</span></p>
       </div>
 
       <p style={{ color: '#fff', fontWeight: 700, padding: '0 20px', marginTop: 16 }}>Profiles ({profiles.length})</p>
@@ -62,9 +70,11 @@ export default function NikahPage({ onBack }: { onBack: () => void }) {
           <p style={{ fontWeight: 800, margin: 0 }}>{p.gender} • Age {p.age} • {p.city}</p>
           <p style={{ fontSize: 13, color: '#6b7280', marginTop: 6 }}>Looking for: {p.looking_for}</p>
           {p.about && <p style={{ fontSize: 13, lineHeight: 1.6, color: '#4b5563' }}>{p.about}</p>}
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#047857', marginTop: 8 }}>Contact via Wali: {p.wali_name || 'Wali'} • {p.wali_contact}</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#047857', marginTop: 8 }}>Contact via Wali: {p.wali_name || 'Wali'}</p>
+          <button onClick={() => showInterest(p)} style={{ width: '100%', marginTop: 12, background: '#25D366', color: '#fff', border: 'none', padding: 12, borderRadius: 999, fontWeight: 800, cursor: 'pointer' }}>I Am Interested — Message Wali On WhatsApp →</button>
+          <p style={{ fontSize: 11, color: '#9ca3af', textAlign: 'center', marginTop: 8 }}>Your message goes to the Wali only. No private chatting.</p>
         </div>
       ))}
     </div>
   );
-}
+                                                }

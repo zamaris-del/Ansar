@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { supabase } from '../../lib/supabase';
-import { notifyAll } from '../../lib/notify';
-import { openWhatsApp, IMAM_WHATSAPP, IMAM_NAME, IMAM_LABEL } from '../../lib/whatsapp';
+import { supabase } from '../lib/supabase';
+import { notifyAll } from '../lib/notify';
+import { openWhatsApp, IMAM_WHATSAPP, IMAM_NAME, IMAM_LABEL } from '../lib/whatsapp';
 
 export default function SOSPage({ onBack }: { onBack: () => void }) {
   const [category, setCategory] = useState('Stranded / No Food / No Shelter');
@@ -65,4 +65,4 @@ export default function SOSPage({ onBack }: { onBack: () => void }) {
       </div>
     </div>
   );
-                   }
+          }

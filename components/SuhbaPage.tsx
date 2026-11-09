@@ -1,56 +1,39 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { notifyAll } from '../lib/notify';
 
-export default function SuhbaPage({ onBack }: any) {
-  const [pairs, setPairs] = useState<any[]>([]);
-  const [type, setType] = useState('Revert Anchor');
-  const [a, setA] = useState(''); const [b, setB] = useState(''); const [city, setCity] = useState('');
-  const load = async () => { const { data } = await supabase.from('suhba_pairs').select('*').order('created_at', { ascending: false }); if (data) setPairs(data); };
+export default function SuhbaPage({ onBack }: { onBack: () => void }) {
+  const [name, setName] = useState(''); const [city, setCity] = useState(''); const [focus, setFocus] = useState('Quran Study'); const [contact, setContact] = useState(''); const [circles, setCircles] = useState<any[]>([]); const [filter, setFilter] = useState('All'); const [joined, setJoined] = useState<string[]>([]);
+  const load = async () => { const { data } = await supabase.from('suhba_circles').select('*').order('created_at', { ascending: false }); setCircles(data || []); };
   useEffect(() => { load(); }, []);
-  const add = async () => {
-    if (!a.trim() || !b.trim()) { alert('Put both names'); return; }
-    await supabase.from('suhba_pairs').insert({ type, person_a: a, person_b: b, city, status: 'GREEN' });
-    setA(''); setB(''); setCity(''); load();
+  const post = async () => {
+    if (!name || !city) return alert('Please enter the circle name and city.');
+    const { error } = await supabase.from('suhba_circles').insert([{ name, city, focus, contact }]);
+    if (error) return alert(error.message);
+    await notifyAll('general', `New Circle in ${city}: ${name}`, `Focus: ${focus}. Join your righteous companions.`, 'suhba');
+    alert('Your circle has been created.'); setName(''); load();
   };
-  const markCheck = async (id: string) => {
-    await supabase.from('suhba_pairs').update({ last_check: new Date().toISOString(), status: 'GREEN' }).eq('id', id); load();
-  };
-  const getStatus = (p: any) => {
-    const days = (Date.now() - new Date(p.last_check).getTime()) / (1000 * 60 * 60 * 24);
-    if (days >= 14) return { label: '🔴 RED - ACTION NOW', cls: 'bg-red-100 text-red-700' };
-    if (days >= 7) return { label: '🟡 YELLOW - 7 days no show', cls: 'bg-yellow-100 text-yellow-700' };
-    return { label: '🟢 GREEN - Okay', cls: 'bg-green-100 text-green-700' };
-  };
+  const input = "w-full mt-2 bg-[#F7F3EC] border rounded-[16px] px-4 py-3.5 text-[14px] outline-none";
+  const filtered = filter === 'All' ? circles : circles.filter(c => c.focus === filter);
   return (
-    <div className="min-h-screen bg-[#F9F7F4] pb-24">
-      <header className="sticky top-0 bg-white p-4 border-b flex items-center gap-3 z-10"><button onClick={onBack} className="bg-black/10 px-4 py-2 rounded-full text-[11px] font-bold">← Back</button><span className="font-black text-[13px]">🤝 SUHBA - My Circle</span></header>
-      <div className="p-4">
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="bg-white rounded-xl border p-3"><p className="text-[18px]">🌱</p><p className="text-[10px] font-bold mt-1">Revert Anchor</p><p className="text-[9px] text-gray-500">1 new Muslim + 1 Anchor</p></div>
-          <div className="bg-white rounded-xl border p-3"><p className="text-[18px]">👥</p><p className="text-[10px] font-bold mt-1">Lonely Circle</p><p className="text-[9px] text-gray-500">Circle of 5</p></div>
-          <div className="bg-white rounded-xl border p-3"><p className="text-[18px]">👴</p><p className="text-[10px] font-bold mt-1">Elder Guardian</p><p className="text-[9px] text-gray-500">1 elder + 1 Guardian</p></div>
-        </div>
-        <div className="bg-white rounded-2xl border p-4 mt-4">
-          <h3 className="font-black text-[13px]">+ Add New Pair / Circle</h3>
-          <div className="flex gap-2 mt-3 flex-wrap">{['Revert Anchor', 'Lonely Circle', 'Elder Guardian'].map(t => <button key={t} onClick={() => setType(t)} className={`px-3 py-2 rounded-full text-[11px] font-bold ${type === t ? 'bg-black text-white' : 'bg-gray-100'}`}>{t}</button>)}</div>
-          <input value={a} onChange={e => setA(e.target.value)} placeholder="Person A e.g. Chidinma (Revert)" className="w-full mt-3 p-3 rounded-xl border text-[13px]" />
-          <input value={b} onChange={e => setB(e.target.value)} placeholder="Person B e.g. Maryam (Anchor)" className="w-full mt-2 p-3 rounded-xl border text-[13px]" />
-          <input value={city} onChange={e => setCity(e.target.value)} placeholder="City e.g. Enugu" className="w-full mt-2 p-3 rounded-xl border text-[13px]" />
-          <button onClick={add} className="w-full mt-2 bg-[#0A1930] text-[#D4AF78] py-3.5 rounded-full text-[11px] font-black">ADD PAIR →</button>
-        </div>
-        <h3 className="font-black text-[13px] mt-5">Coordinator Dashboard - {pairs.length} pairs</h3>
-        <div className="mt-3 space-y-3">
-          {pairs.map(p => { const s = getStatus(p); return (
-            <div key={p.id} className="bg-white rounded-2xl border p-4">
-              <div className="flex justify-between"><span className="text-[11px] font-bold">{p.type}</span><span className={`text-[10px] font-black px-2 py-1 rounded-full ${s.cls}`}>{s.label}</span></div>
-              <p className="text-[13px] mt-2 font-bold">{p.person_a} + {p.person_b}</p>
-              <p className="text-[11px] text-gray-500">{p.city} • Last check: {new Date(p.last_check).toLocaleDateString()}</p>
-              <button onClick={() => markCheck(p.id)} className="mt-2 bg-green-600 text-white px-4 py-2 rounded-full text-[11px] font-bold">✅ Mark Checked Today</button>
-            </div>
-          ); })}
-          {pairs.length === 0 && <p className="text-center text-gray-400 text-[12px] py-6">No pair yet. Add your first revert + anchor.</p>}
-        </div>
+    <div className="min-h-screen bg-[#0F2439] max-w-[430px] mx-auto pb-[120px]">
+      <div className="px-5 pt-4 flex items-center gap-3"><button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full text-white">←</button><div><h1 className="text-white font-extrabold">SUHBA — Your Circle</h1><p className="text-[#D4AF78] text-[11px] font-bold">FIND RIGHTEOUS FRIENDS NEAR YOU</p></div></div>
+      <div className="mx-4 mt-4 bg-white rounded-[24px] p-5">
+        <p className="font-extrabold">Create A Circle</p>
+        <label className="block text-[11px] font-bold text-gray-400 mt-3">CIRCLE NAME</label><input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Lagos Quran Brothers" className={input} />
+        <label className="block text-[11px] font-bold text-gray-400 mt-3">CITY</label><input value={city} onChange={e => setCity(e.target.value)} placeholder="Lagos" className={input} />
+        <div className="flex flex-wrap gap-2 mt-3">{['Quran Study', 'Fitness', 'Business', 'Sisters Only', 'Brothers Only', 'Youth'].map(f => (<button key={f} onClick={() => setFocus(f)} className={`px-3 py-2 rounded-full text-[12px] font-bold ${focus === f ? 'bg-black text-white' : 'bg-gray-100'}`}>{f}</button>))}</div>
+        <label className="block text-[11px] font-bold text-gray-400 mt-3">WHATSAPP GROUP LINK</label><input value={contact} onChange={e => setContact(e.target.value)} placeholder="WhatsApp link or number" className={input} />
+        <button onClick={post} className="w-full mt-4 bg-[#0F2439] text-white font-extrabold py-4 rounded-full">CREATE CIRCLE →</button>
       </div>
+      <div className="px-5 mt-5 flex gap-2 overflow-x-auto no-scrollbar">{['All', 'Quran Study', 'Sisters Only', 'Brothers Only', 'Youth', 'Business'].map(f => (<button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-full text-[12px] font-bold whitespace-nowrap ${filter === f ? 'bg-white text-black' : 'bg-white/10 text-white'}`}>{f}</button>))}</div>
+      {filtered.map(c => (
+        <div key={c.id} className="mx-4 mt-3 bg-white rounded-[20px] p-4">
+          <div className="flex justify-between"><p className="font-extrabold">{c.name}</p><span className="text-[11px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full font-bold">● Active</span></div>
+          <p className="text-[12px] text-gray-500">{c.city} • {c.focus} • 12 Members</p>
+          <button onClick={() => setJoined(prev => prev.includes(c.id) ? prev.filter(id => id !== c.id) : [...prev, c.id])} className={`w-full mt-3 py-3 rounded-full text-[13px] font-bold ${joined.includes(c.id) ? 'bg-emerald-600 text-white' : 'bg-black text-white'}`}>{joined.includes(c.id) ? '✓ Joined — See You There' : 'Join Circle →'}</button>
+        </div>
+      ))}
     </div>
   );
-      }
+                    }

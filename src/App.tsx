@@ -199,4 +199,4 @@ export default function App() {
       <FloatingNav page={page} go={go} />
     </div>
   );
-              }
+          }

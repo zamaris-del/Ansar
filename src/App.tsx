@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
-import { supabase } from './lib/supabase';
-import SOSPage from './components/SOSPage';
-import SualPage from './components/SualPage';
-import SuhbaPage from './components/SuhbaPage';
-import KasbPage from './components/KasbPage';
-import NikahPage from './components/NikahPage';
-import DuaPage from './components/DuaPage';
-import TamkeenPage from './components/TamkeenPage';
-import MadrasahPage from './components/MadrasahPage';
-import MasjidPulsePage from './components/MasjidPulsePage';
-import WaqfPage from './components/WaqfPage';
+import { supabase } from '../lib/supabase';
+import SOSPage from '../components/SOSPage';
+import SualPage from '../components/SualPage';
+import SuhbaPage from '../components/SuhbaPage';
+import KasbPage from '../components/KasbPage';
+import NikahPage from '../components/NikahPage';
+import DuaPage from '../components/DuaPage';
+import TamkeenPage from '../components/TamkeenPage';
+import MadrasahPage from '../components/MadrasahPage';
+import MasjidPulsePage from '../components/MasjidPulsePage';
+import WaqfPage from '../components/WaqfPage';
 
 const pillars = [
   { id: 'sual', icon: '❓', title: "SU'AL", desc: 'Ask Without Shame', count: '1.2k questions' },
@@ -139,4 +139,4 @@ export default function App() {
       <FloatingNav page={page} setPage={setPage} />
     </div>
   );
-   }
+}

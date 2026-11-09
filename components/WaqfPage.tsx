@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
-import { notifyAll } from '../lib/notify';
+import { supabase } from '../../lib/supabase';
+import { notifyAll } from '../../lib/notify';
 
 export default function WaqfPage({ onBack }: { onBack: () => void }) {
   const [name, setName] = useState('');

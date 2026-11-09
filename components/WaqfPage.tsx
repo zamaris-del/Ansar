@@ -1,58 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { notifyAll } from '../lib/notify';
 
-export default function WaqfPage({ onBack }: any) {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [title, setTitle] = useState(''); const [loc, setLoc] = useState(''); const [target, setTarget] = useState(''); const [cat, setCat] = useState('Water Well'); const [desc, setDesc] = useState('');
-  const [donor, setDonor] = useState(''); const [donateAmt, setDonateAmt] = useState('100');
-  const load = async () => { const { data } = await supabase.from('waqf_projects').select('*').order('created_at', { ascending: false }); if (data) setProjects(data); };
-  useEffect(() => { load(); }, []);
-  const createProject = async () => {
-    if (!title.trim()) return;
-    await supabase.from('waqf_projects').insert({ title, location: loc, target_amount: parseInt(target) || 100000, raised_amount: 0, category: cat, description: desc });
-    setTitle(''); setLoc(''); setTarget(''); setDesc(''); load();
+export default function WaqfPage({ onBack }: { onBack: () => void }) {
+  const [amount, setAmount] = useState(100); const [name, setName] = useState(''); const [cause, setCause] = useState('SOS Fund'); const [recurring, setRecurring] = useState(false);
+  const give = async () => {
+    const { error } = await supabase.from('waqf_donations').insert([{ amount, donor_name: name || 'Anonymous', cause }]);
+    if (error) return alert(error.message);
+    await notifyAll('waqf', `${name || 'Someone'} gave ₦${amount} to ${cause}${recurring ? ' (Daily)' : ''}`, 'JazakAllah Khair! A small amount daily, a great reward in Jannah.', 'waqf');
+    alert(`JazakAllah Khair! ₦${amount} to ${cause}${recurring ? ' — Daily recurring activated.' : '.'} May Allah reward you.`);
   };
-  const donate = async (p: any) => {
-    const amt = parseInt(donateAmt) || 100;
-    await supabase.from('waqf_donations').insert({ donor_name: donor || 'Anonymous', project_id: p.id, amount: amt });
-    await supabase.from('waqf_projects').update({ raised_amount: (p.raised_amount || 0) + amt }).eq('id', p.id);
-    load(); alert(`JazakAllah! Your ₦${amt} don join. Sadaqah Jariyah go continue even after you die.`);
-  };
-  const totalRaised = projects.reduce((s, p) => s + (p.raised_amount || 0), 0);
+  const leaders = [{ name: 'Aisha B.', amount: '₦48,200', badge: '🥇' }, { name: 'Musa K.', amount: '₦32,500', badge: '🥈' }, { name: 'Fatima A.', amount: '₦27,000', badge: '🥉' }];
   return (
-    <div className="min-h-screen bg-[#F9F7F4] pb-24">
-      <header className="sticky top-0 bg-white p-4 border-b flex items-center gap-3 z-10"><button onClick={onBack} className="bg-black/10 px-4 py-2 rounded-full text-[11px] font-bold">← Back</button><span className="font-black text-[13px]">💧 WAQF - Small Small Sadaqah Jariyah</span></header>
-      <div className="p-4">
-        <div className="bg-[#0A1930] rounded-2xl p-4 text-white"><p className="text-[11px] text-[#D4AF78] font-bold">EVEN POOR PERSON FIT DO SADAQAH JARIYAH EVERY DAY</p><p className="text-[12px] text-white/70 mt-2 leading-6">Your ₦100 + 10,000 people = 1 borehole for Borno. Total raised on ANSAR: ₦{totalRaised.toLocaleString()}</p></div>
-        <div className="bg-white rounded-2xl border p-4 mt-4">
-          <h3 className="font-black text-[13px]">+ Create Waqf Project</h3>
-          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Project e.g. Borehole for Borno" className="w-full mt-3 p-3 rounded-xl border text-[13px]" />
-          <input value={loc} onChange={e => setLoc(e.target.value)} placeholder="Location e.g. Borno" className="w-full mt-2 p-3 rounded-xl border text-[13px]" />
-          <select value={cat} onChange={e => setCat(e.target.value)} className="w-full mt-2 p-3 rounded-xl border text-[13px]"><option>Water Well</option><option>Quran School</option><option>Masjid Building</option><option>Orphan School Fees</option></select>
-          <input value={target} onChange={e => setTarget(e.target.value)} placeholder="Target e.g. 500000" type="number" className="w-full mt-2 p-3 rounded-xl border text-[13px]" />
-          <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={2} placeholder="Description..." className="w-full mt-2 p-3 rounded-xl border text-[13px]" />
-          <button onClick={createProject} className="w-full mt-2 bg-[#0A1930] text-[#D4AF78] py-3.5 rounded-full text-[11px] font-black">CREATE PROJECT →</button>
-        </div>
-        <div className="bg-white rounded-2xl border p-4 mt-4">
-          <h3 className="font-black text-[13px]">💧 Give ₦100 Daily</h3>
-          <input value={donor} onChange={e => setDonor(e.target.value)} placeholder="Your name" className="w-full mt-3 p-3 rounded-xl border text-[13px]" />
-          <div className="flex gap-2 mt-2">{['100', '500', '1000', '5000'].map(a => <button key={a} onClick={() => setDonateAmt(a)} className={`flex-1 py-3 rounded-full text-[12px] font-black ${donateAmt === a ? 'bg-black text-white' : 'bg-gray-100'}`}>₦{a}</button>)}</div>
-          <p className="text-[11px] text-gray-500 mt-2">Selected: ₦{donateAmt} - Pick project below to give</p>
-        </div>
-        <div className="mt-4 space-y-3">{projects.map(p => {
-          const pct = p.target_amount ? Math.min(100, (p.raised_amount / p.target_amount) * 100) : 0;
-          return (
-            <div key={p.id} className="bg-white rounded-2xl border p-4">
-              <div className="flex justify-between"><span className="text-[10px] font-black px-2 py-1 rounded-full bg-blue-100 text-blue-700">{p.category}</span><span className="text-[10px] font-bold">{pct.toFixed(0)}% done</span></div>
-              <p className="font-black text-[14px] mt-2">{p.title}</p>
-              <p className="text-[12px] text-gray-600">📍 {p.location} • {p.description}</p>
-              <div className="mt-3 bg-gray-100 rounded-full h-2.5 overflow-hidden"><div className="h-full bg-blue-600" style={{ width: pct + '%' }}></div></div>
-              <p className="text-[11px] mt-1 font-bold">₦{p.raised_amount?.toLocaleString()} / ₦{p.target_amount?.toLocaleString()}</p>
-              <button onClick={() => donate(p)} className="mt-3 w-full bg-blue-600 text-white py-3 rounded-full text-[11px] font-black">💧 GIVE ₦{donateAmt} TO THIS PROJECT</button>
-            </div>
-          );
-        })}{projects.length === 0 && <p className="text-center text-gray-400 text-[12px] py-6">No Waqf project yet. Create borehole for Borno first.</p>}</div>
+    <div className="min-h-screen bg-[#0F2439] max-w-[430px] mx-auto pb-[120px]">
+      <div className="px-5 pt-4 flex items-center gap-3"><button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full text-white">←</button><div><h1 className="text-white font-extrabold">WAQF</h1><p className="text-[#D4AF78] text-[11px] font-bold">₦100 DAILY SADAQAH</p></div></div>
+      <div className="mx-4 mt-4 bg-white rounded-[24px] p-5 text-center"><p className="font-extrabold text-[22px]">₦1,248,500 Raised</p><p className="text-[12px] text-gray-500">From 2,418 Muslims • Goal ₦5,000,000</p><div className="h-3 bg-gray-100 rounded-full mt-3"><div className="h-3 bg-[#D4AF78] rounded-full" style={{ width: '25%' }} /></div><div className="grid grid-cols-3 gap-2 mt-4 text-left"><div className="bg-gray-50 rounded-[12px] p-3"><p className="text-[10px] text-gray-500 font-bold">SOS FUND</p><p className="font-extrabold text-[13px]">₦620k</p></div><div className="bg-gray-50 rounded-[12px] p-3"><p className="text-[10px] text-gray-500 font-bold">ORPHANS</p><p className="font-extrabold text-[13px]">₦380k</p></div><div className="bg-gray-50 rounded-[12px] p-3"><p className="text-[10px] text-gray-500 font-bold">EDUCATION</p><p className="font-extrabold text-[13px]">₦248k</p></div></div><p className="text-[11px] text-gray-400 mt-3">100% transparent. See exactly where your money goes.</p></div>
+      <div className="mx-4 mt-3 bg-white rounded-[24px] p-5"><p className="font-extrabold">Top Givers This Month 🏆</p>{leaders.map(l => (<div key={l.name} className="flex items-center justify-between py-2.5 border-b last:border-0"><p className="text-[13px] font-bold">{l.badge} {l.name}</p><p className="font-extrabold text-[13px]">{l.amount}</p></div>))}</div>
+      <div className="mx-4 mt-3 bg-white rounded-[24px] p-5">
+        <p className="font-extrabold">Choose A Cause</p>
+        <div className="flex flex-wrap gap-2 mt-3">{['SOS Fund', 'Orphans', 'Masjid Building', 'Education'].map(c => (<button key={c} onClick={() => setCause(c)} className={`px-3 py-2 rounded-full text-[12px] font-bold ${cause === c ? 'bg-black text-white' : 'bg-gray-100'}`}>{c}</button>))}</div>
+        <p className="font-extrabold mt-5">Choose An Amount</p>
+        <div className="grid grid-cols-4 gap-2 mt-3">{[100, 500, 1000, 5000].map(a => (<button key={a} onClick={() => setAmount(a)} className={`py-3 rounded-[16px] font-extrabold ${amount === a ? 'bg-[#D4AF78] text-black' : 'bg-gray-100'}`}>₦{a}</button>))}</div>
+        <div className="flex items-center justify-between bg-[#FFF6E0] rounded-[16px] p-4 mt-4"><div><p className="font-bold text-[13px]">Make It Daily? 🔁</p><p className="text-[11px] text-gray-500">Give ₦{amount} every day automatically.</p></div><button onClick={() => setRecurring(!recurring)} className={`w-12 h-7 rounded-full p-1 transition ${recurring ? 'bg-emerald-500' : 'bg-gray-300'}`}><div className={`w-5 h-5 bg-white rounded-full transition ${recurring ? 'translate-x-5' : ''}`} /></button></div>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name (or Anonymous)" className="w-full mt-4 bg-[#F7F3EC] border rounded-[16px] px-4 py-3.5 outline-none" />
+        <button onClick={give} className="w-full mt-4 bg-[#D4AF78] font-extrabold py-4 rounded-full">GIVE ₦{amount} TO {cause.toUpperCase()} {recurring ? 'DAILY →' : '→'}</button>
+        <p className="text-[11px] text-gray-400 text-center mt-3">Even ₦100 a day becomes Sadaqah Jariyah that never stops.</p>
       </div>
     </div>
   );
-            }
+}

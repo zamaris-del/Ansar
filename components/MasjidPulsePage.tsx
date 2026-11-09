@@ -3,37 +3,69 @@ import { supabase } from '../lib/supabase';
 import { notifyAll } from '../lib/notify';
 
 export default function MasjidPulsePage({ onBack }: { onBack: () => void }) {
-  const [masjid, setMasjid] = useState(''); const [city, setCity] = useState(''); const [status, setStatus] = useState('Active'); const [update, setUpdate] = useState(''); const [pulses, setPulses] = useState<any[]>([]);
-  const load = async () => { const { data } = await supabase.from('masjid_pulse').select('*').order('created_at', { ascending: false }); setPulses(data || []); };
+  const [masjid, setMasjid] = useState('');
+  const [city, setCity] = useState('');
+  const [status, setStatus] = useState('Active');
+  const [update, setUpdate] = useState('');
+  const [pulses, setPulses] = useState<any[]>([]);
+
+  const load = async () => {
+    const { data } = await supabase.from('masjid_pulse').select('*').order('created_at', { ascending: false });
+    setPulses(data || []);
+  };
   useEffect(() => { load(); }, []);
+
   const post = async () => {
     if (!masjid) return alert('Please enter the masjid name.');
     const { error } = await supabase.from('masjid_pulse').insert([{ masjid_name: masjid, city, status, update_text: update }]);
     if (error) return alert(error.message);
     await notifyAll('general', `Masjid Update: ${masjid} in ${city}`, `${status} — ${update.slice(0, 80)}`, 'pulse');
-    alert('Your masjid update has been posted.'); setMasjid(''); setUpdate(''); load();
+    alert('Your masjid update has been posted.');
+    setMasjid(''); setUpdate(''); load();
   };
-  const input = "w-full mt-1.5 bg-[#F7F3EC] border border-[#E8DDC8] rounded-[14px] px-3.5 py-3 text-[14px] outline-none";
+
+  const inputStyle: React.CSSProperties = { width: '100%', marginTop: 6, background: '#F7F3EC', border: '1px solid #E8DDC8', borderRadius: 14, padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
+  const labelStyle: React.CSSProperties = { display: 'block', fontSize: 11, fontWeight: 700, color: '#9ca3af', marginTop: 12, letterSpacing: 0.5 };
   const prayerTimes = [{ name: 'Fajr', time: '5:15 AM' }, { name: 'Dhuhr', time: '1:30 PM' }, { name: 'Asr', time: '4:15 PM' }, { name: 'Maghrib', time: '6:45 PM' }, { name: 'Isha', time: '8:00 PM' }];
+
   return (
-    <div className="min-h-screen bg-[#0F2439] w-full max-w-[430px] mx-auto pb-[110px] overflow-x-hidden">
-      <div className="px-4 pt-4 flex items-center gap-3"><button onClick={onBack} className="w-10 h-10 shrink-0 bg-white/10 rounded-full text-white">←</button><div><h1 className="text-white font-extrabold text-[18px]">MASJID PULSE</h1><p className="text-[#D4AF78] text-[10px] font-bold">IS YOUR MASJID ACTIVE? LET'S KEEP IT ALIVE</p></div></div>
-
-      <div className="mx-4 mt-4 bg-white rounded-[22px] p-4"><div className="flex justify-between items-center"><p className="font-extrabold text-[14px]">Today's Prayer Times</p><span className="text-[11px] text-emerald-700 font-bold">● Lagos</span></div><div className="grid grid-cols-5 gap-2 mt-3">{prayerTimes.map(p => (<div key={p.name} className="text-center bg-[#F7F3EC] rounded-[12px] py-2.5 px-1"><p className="text-[10px] font-bold text-gray-500">{p.name}</p><p className="text-[11px] font-extrabold mt-0.5">{p.time}</p></div>))}</div><p className="text-[11px] text-gray-400 mt-3 leading-[1.5]">Times are for Lagos. Your city times will be added soon. Next: Maghrib • Jumuah: 1:30 PM</p></div>
-
-      <div className="mx-4 mt-3 bg-white rounded-[22px] p-4">
-        <p className="font-extrabold text-[16px]">Update Your Masjid</p><p className="text-[12px] text-gray-500 leading-[1.6] mt-1">Share news, needs, or events so the community can help.</p>
-        <label className="block text-[11px] font-bold text-gray-400 mt-4">MASJID NAME</label><input value={masjid} onChange={e => setMasjid(e.target.value)} placeholder="e.g. Central Mosque" className={input} />
-        <label className="block text-[11px] font-bold text-gray-400 mt-3">CITY</label><input value={city} onChange={e => setCity(e.target.value)} placeholder="e.g. Lagos" className={input} />
-        <label className="block text-[11px] font-bold text-gray-400 mt-3">STATUS</label>
-        <div className="flex flex-wrap gap-2 mt-2">{['Active', 'Needs Help', 'Building', 'Jumuah Only'].map(s => (<button key={s} onClick={() => setStatus(s)} className={`px-3 py-2 rounded-full text-[12px] font-bold ${status === s ? 'bg-black text-white' : 'bg-gray-100'}`}>{s}</button>))}</div>
-        <label className="block text-[11px] font-bold text-gray-400 mt-3">UPDATE / WHAT DOES YOUR MASJID NEED?</label><textarea value={update} onChange={e => setUpdate(e.target.value)} placeholder="e.g. We need Qurans, a fan for the sisters section, and volunteers for cleaning..." className={input} />
-        <button onClick={post} className="w-full mt-4 bg-[#0F2439] text-white font-extrabold py-3.5 rounded-full text-[14px]">Post Update →</button>
+    <div style={{ minHeight: '100vh', background: '#0F2439', width: '100%', maxWidth: 430, margin: '0 auto', paddingBottom: 110, overflowX: 'hidden', boxSizing: 'border-box' }}>
+      <div style={{ padding: '16px 16px 0', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={onBack} style={{ width: 40, height: 40, flexShrink: 0, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', color: '#fff', fontSize: 18, cursor: 'pointer' }}>←</button>
+        <div><h1 style={{ color: '#fff', fontWeight: 800, fontSize: 18, margin: 0 }}>MASJID PULSE</h1><p style={{ color: '#D4AF78', fontSize: 10, fontWeight: 700, margin: 0, marginTop: 2 }}>IS YOUR MASJID ACTIVE? LET'S KEEP IT ALIVE</p></div>
       </div>
 
-      <p className="px-5 mt-4 text-white font-bold text-[14px]">Masjid Updates {pulses.length > 0 && `(${pulses.length})`}</p>
-      {pulses.length === 0 && <div className="mx-4 mt-3 bg-white/5 border border-white/10 rounded-[18px] p-5 text-center"><p className="text-[28px]">🕌</p><p className="text-white font-bold text-[14px] mt-2">No masjid updates yet</p><p className="text-white/50 text-[12px] mt-1">Be the first to update your masjid.</p></div>}
-      {pulses.map(p => (<div key={p.id} className="mx-4 mt-3 bg-white rounded-[18px] p-4"><div className="flex justify-between items-start gap-2"><p className="font-extrabold text-[14px] leading-tight">{p.masjid_name} • {p.city}</p><span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">{p.status}</span></div><p className="text-[13px] leading-[1.6] text-gray-600 mt-2">{p.update_text}</p><button className="mt-3 bg-[#D4AF78] px-4 py-2 rounded-full text-[12px] font-bold">Help This Masjid →</button></div>))}
+      <div style={{ margin: '16px 16px 0', background: '#fff', borderRadius: 22, padding: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><p style={{ fontWeight: 800, fontSize: 14, margin: 0 }}>Today's Prayer Times</p><span style={{ fontSize: 11, color: '#047857', fontWeight: 700 }}>● Lagos</span></div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginTop: 12 }}>
+          {prayerTimes.map(p => (<div key={p.name} style={{ textAlign: 'center', background: '#F7F3EC', borderRadius: 12, padding: '10px 4px' }}><p style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', margin: 0 }}>{p.name}</p><p style={{ fontSize: 11, fontWeight: 800, marginTop: 2, marginBottom: 0 }}>{p.time}</p></div>))}
+        </div>
+        <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 12, lineHeight: 1.5, marginBottom: 0 }}>Times are for Lagos. Your city times will be added soon. Next: Maghrib • Jumuah: 1:30 PM</p>
+      </div>
+
+      <div style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 22, padding: 16 }}>
+        <p style={{ fontWeight: 800, fontSize: 16, margin: 0 }}>Update Your Masjid</p>
+        <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6, marginTop: 4, marginBottom: 0 }}>Share news, needs, or events so the community can help.</p>
+        <label style={{ ...labelStyle, marginTop: 16 }}>MASJID NAME</label>
+        <input value={masjid} onChange={e => setMasjid(e.target.value)} placeholder="e.g. Central Mosque" style={inputStyle} />
+        <label style={labelStyle}>CITY</label>
+        <input value={city} onChange={e => setCity(e.target.value)} placeholder="e.g. Lagos" style={inputStyle} />
+        <label style={labelStyle}>STATUS</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>{['Active', 'Needs Help', 'Building', 'Jumuah Only'].map(s => (<button key={s} onClick={() => setStatus(s)} style={{ padding: '8px 12px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer', background: status === s ? '#000' : '#f3f4f6', color: status === s ? '#fff' : '#374151' }}>{s}</button>))}</div>
+        <label style={labelStyle}>UPDATE / WHAT DOES YOUR MASJID NEED?</label>
+        <textarea value={update} onChange={e => setUpdate(e.target.value)} placeholder="e.g. We need Qurans, a fan for the sisters section, and volunteers for cleaning..." style={{ ...inputStyle, minHeight: 90 }} />
+        <button onClick={post} style={{ width: '100%', marginTop: 16, background: '#0F2439', color: '#fff', fontWeight: 800, padding: '14px', borderRadius: 999, border: 'none', fontSize: 14, cursor: 'pointer' }}>Post Update →</button>
+      </div>
+
+      <p style={{ padding: '0 20px', marginTop: 16, color: '#fff', fontWeight: 700, fontSize: 14, marginBottom: 0 }}>Masjid Updates {pulses.length > 0 && `(${pulses.length})`}</p>
+      {pulses.length === 0 && <div style={{ margin: '12px 16px 0', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 18, padding: 20, textAlign: 'center' }}><p style={{ fontSize: 28, margin: 0 }}>🕌</p><p style={{ color: '#fff', fontWeight: 700, fontSize: 14, marginTop: 8, marginBottom: 0 }}>No masjid updates yet</p><p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 4, marginBottom: 0 }}>Be the first to update your masjid.</p></div>}
+      {pulses.map(p => (
+        <div key={p.id} style={{ margin: '12px 16px 0', background: '#fff', borderRadius: 18, padding: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}><p style={{ fontWeight: 800, fontSize: 14, lineHeight: 1.3, margin: 0 }}>{p.masjid_name} • {p.city}</p><span style={{ fontSize: 10, fontWeight: 700, background: '#ECFDF5', color: '#047857', padding: '4px 8px', borderRadius: 999, flexShrink: 0 }}>{p.status}</span></div>
+          <p style={{ fontSize: 13, lineHeight: 1.6, color: '#4b5563', marginTop: 8, marginBottom: 0 }}>{p.update_text}</p>
+          <button style={{ marginTop: 12, background: '#D4AF78', color: '#000', padding: '8px 16px', borderRadius: 999, border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Help This Masjid →</button>
+        </div>
+      ))}
     </div>
   );
-}
+        }

@@ -24,27 +24,6 @@ const pillars = [
   { id: 'waqf', icon: '💧', title: 'WAQF', desc: 'Give Sadaqah in your own currency.' },
 ];
 
-function FloatingNav({ page, setPage }: { page: string, setPage: (p: string) => void }) {
-  const items = [
-    { id: 'home', label: 'Home', icon: '🏠' },
-    { id: 'sual', label: "SU'AL", icon: '❓' },
-    { id: 'sos', label: 'SOS', icon: '🚨' },
-    { id: 'kasb', label: 'KASB', icon: '💼' },
-    { id: 'dua', label: 'DUA', icon: '🤲' },
-    { id: 'waqf', label: 'WAQF', icon: '💧' },
-  ];
-  return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-[430px] px-4">
-      <div className="flex items-center justify-between bg-[#1B2E42] border border-white/10 rounded-full p-1.5 shadow-xl">
-        {items.map(n => {
-          const active = page === n.id;
-          return <button key={n.id} onClick={() => setPage(n.id)} className={`flex items-center gap-1.5 rounded-full ${active ? 'bg-white text-black px-3 py-2.5' : 'text-white/60 px-2.5 py-2.5'}`}><span className="text-[16px]">{n.icon}</span>{active && <span className="text-[11px] font-bold">{n.label}</span>}</button>;
-        })}
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
   const [page, setPage] = useState('home');
   const [notifs, setNotifs] = useState<any[]>([]);
@@ -60,26 +39,55 @@ export default function App() {
   if (page === 'madrasah') return <MadrasahPage onBack={() => setPage('home')} />;
   if (page === 'pulse') return <MasjidPulsePage onBack={() => setPage('home')} />;
   if (page === 'waqf') return <WaqfPage onBack={() => setPage('home')} />;
+
   return (
-    <div className="min-h-screen bg-[#0F2439] pb-[110px] w-full max-w-[430px] mx-auto overflow-x-hidden">
-      <div className="flex items-center justify-between px-4 pt-5">
-        <div className="flex items-center gap-2.5"><div className="w-10 h-10 shrink-0 bg-[#D4AF78] rounded-[12px] flex items-center justify-center font-black text-black text-[19px]">A</div><div><p className="text-white font-extrabold tracking-[0.2em] text-[14px] leading-none">ANSAR</p><p className="text-white/40 text-[9px] tracking-[0.12em] font-semibold mt-1">NO MUSLIM LEFT ALONE</p></div></div>
-        <div className="flex items-center gap-2"><button onClick={() => setShowNotif(!showNotif)} className="relative w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">🔔{notifs.length > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">{notifs.length}</span>}</button><button onClick={() => setPage('waqf')} className="bg-[#D4AF78] text-black text-[12px] font-bold px-3 py-2.5 rounded-full">Give</button></div>
+    <div style={{ minHeight: '100vh', background: '#0F2439', width: '100%', maxWidth: 430, margin: '0 auto', paddingBottom: 110, overflowX: 'hidden', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 16px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 40, height: 40, background: '#D4AF78', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 19 }}>A</div>
+          <div><div style={{ color: '#fff', fontWeight: 800, letterSpacing: 2, fontSize: 14 }}>ANSAR</div><div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 9, letterSpacing: 1, marginTop: 2 }}>NO MUSLIM LEFT ALONE</div></div>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => setShowNotif(!showNotif)} style={{ width: 40, height: 40, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', fontSize: 16 }}>🔔</button>
+          <button onClick={() => setPage('waqf')} style={{ background: '#D4AF78', border: 'none', borderRadius: 999, padding: '10px 14px', fontWeight: 700, fontSize: 12 }}>Give</button>
+        </div>
       </div>
-      {showNotif && <div className="mx-4 mt-4 bg-white rounded-[20px] p-4"><p className="font-extrabold">Notifications</p>{notifs.length === 0 ? <p className="text-gray-500 text-[13px] mt-2">No notifications yet. New SOS, jobs and Janazah alerts will appear here.</p> : notifs.map(n => (<div key={n.id} className="border-b py-3 last:border-0"><p className="font-bold text-[13px]">{n.title}</p><p className="text-[12px] text-gray-500">{n.message}</p></div>))}</div>}
-      <div className="px-5 pt-8">
-        <div className="inline-flex items-center gap-2 bg-white/[0.07] border border-white/10 px-3 py-1.5 rounded-full"><span className="w-2 h-2 bg-emerald-400 rounded-full" /><span className="text-[#D4AF78] text-[10px] font-bold tracking-[0.15em]">A COMMUNITY FOR EVERY MUSLIM</span></div>
-        <h1 className="font-serif-lux text-[44px] leading-[1.02] font-black text-white mt-5">Find Your<br /><span className="text-[#D4AF78]">Ummah.</span><br />Find Your<br />Home.</h1>
-        <p className="text-white/60 text-[14px] leading-[1.7] mt-4">From questions to marriage, from work to help — one family, one app.</p>
-        <button onClick={() => setPage('sual')} className="w-full mt-6 bg-[#D4AF78] text-black font-extrabold text-[14px] py-4 rounded-full">Enter ANSAR — It Is Free →</button>
-        <button onClick={() => setPage('sos')} className="w-full mt-3 bg-white/10 border border-white/10 text-white font-bold text-[14px] py-4 rounded-full">I Need Help Now</button>
+
+      {showNotif && <div style={{ margin: '16px 16px 0', background: '#fff', borderRadius: 20, padding: 16 }}><div style={{ fontWeight: 800 }}>Notifications</div>{notifs.length === 0 ? <div style={{ color: '#6b7280', fontSize: 13, marginTop: 8 }}>No notifications yet.</div> : notifs.map(n => (<div key={n.id} style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}><div style={{ fontWeight: 700, fontSize: 13 }}>{n.title}</div><div style={{ fontSize: 12, color: '#6b7280' }}>{n.message}</div></div>))}</div>}
+
+      <div style={{ padding: '32px 20px 0' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', padding: '6px 12px', borderRadius: 999 }}><span style={{ width: 8, height: 8, background: '#34d399', borderRadius: '50%' }} /><span style={{ color: '#D4AF78', fontSize: 10, fontWeight: 700, letterSpacing: 1 }}>A COMMUNITY FOR EVERY MUSLIM</span></div>
+        <h1 style={{ color: '#fff', fontSize: 42, lineHeight: 1.05, fontWeight: 900, margin: '20px 0 0', fontFamily: 'Georgia, serif' }}>Find Your<br /><span style={{ color: '#D4AF78' }}>Ummah.</span><br />Find Your<br />Home.</h1>
+        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.7, marginTop: 12 }}>From questions to marriage, from work to help — one family, one app.</p>
+        <button onClick={() => setPage('sual')} style={{ width: '100%', marginTop: 22, background: '#D4AF78', border: 'none', padding: 16, borderRadius: 999, fontWeight: 800, fontSize: 14 }}>Enter ANSAR — It Is Free →</button>
+        <button onClick={() => setPage('sos')} style={{ width: '100%', marginTop: 10, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', padding: 16, borderRadius: 999, fontWeight: 700, fontSize: 14 }}>I Need Help Now</button>
       </div>
-      <div className="px-4 mt-6">
-        <p className="text-white font-bold text-[16px] px-1">What do you need today?</p>
-        <div className="grid grid-cols-2 gap-3 mt-3">{pillars.map(p => (<button key={p.id} onClick={() => setPage(p.id)} className="bg-white rounded-[20px] p-4 text-left"><div className="w-[44px] h-[44px] bg-[#FFF6E0] rounded-[12px] flex items-center justify-center text-[22px]">{p.icon}</div><p className="font-extrabold text-[15px] mt-3">{p.title}</p><p className="text-[12px] text-gray-500 leading-[1.5] mt-1">{p.desc}</p></button>))}</div>
-        <div className="bg-[#D4AF78] rounded-[22px] p-5 mt-4"><p className="text-black font-extrabold text-[16px]">Waqf — Give In Your Currency</p><p className="text-black/60 text-[12px] mt-1">Choose Naira, Dollars, Pounds, or any currency you use.</p><button onClick={() => setPage('waqf')} className="mt-3 bg-black text-white font-bold text-[12px] px-4 py-2.5 rounded-full">Give Sadaqah →</button></div>
+
+      <div style={{ padding: '24px 16px 0' }}>
+        <div style={{ color: '#fff', fontWeight: 700, fontSize: 16, paddingLeft: 4 }}>What do you need today?</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+          {pillars.map(p => (
+            <button key={p.id} onClick={() => setPage(p.id)} style={{ background: '#fff', border: 'none', borderRadius: 20, padding: 16, textAlign: 'left', cursor: 'pointer' }}>
+              <div style={{ width: 44, height: 44, background: '#FFF6E0', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{p.icon}</div>
+              <div style={{ fontWeight: 800, fontSize: 15, marginTop: 12 }}>{p.title}</div>
+              <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.5, marginTop: 4 }}>{p.desc}</div>
+            </button>
+          ))}
+        </div>
+        <div style={{ background: '#D4AF78', borderRadius: 20, padding: 20, marginTop: 16 }}>
+          <div style={{ fontWeight: 800, fontSize: 16 }}>Waqf — Give In Your Currency</div>
+          <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', marginTop: 4 }}>Choose Naira, Dollars, Pounds, or any currency you use.</div>
+          <button onClick={() => setPage('waqf')} style={{ marginTop: 12, background: '#000', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: 999, fontWeight: 700, fontSize: 12 }}>Give Sadaqah →</button>
+        </div>
       </div>
-      <FloatingNav page={page} setPage={setPage} />
+
+      <div style={{ position: 'fixed', bottom: 16, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 430, padding: '0 16px', boxSizing: 'border-box', zIndex: 50 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', background: '#1B2E42', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 999, padding: 6 }}>
+          {[{ id: 'home', label: 'Home', icon: '🏠' }, { id: 'sual', label: "SU'AL", icon: '❓' }, { id: 'sos', label: 'SOS', icon: '🚨' }, { id: 'kasb', label: 'KASB', icon: '💼' }, { id: 'dua', label: 'DUA', icon: '🤲' }, { id: 'waqf', label: 'WAQF', icon: '💧' }].map(n => (
+            <button key={n.id} onClick={() => setPage(n.id)} style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', borderRadius: 999, padding: '10px 10px', background: page === n.id ? '#fff' : 'transparent', color: page === n.id ? '#000' : 'rgba(255,255,255,0.6)', fontWeight: 700, fontSize: 11, cursor: 'pointer' }}><span>{n.icon}</span>{page === n.id && <span>{n.label}</span>}</button>
+          ))}
+        </div>
+      </div>
     </div>
   );
-      }
+    }

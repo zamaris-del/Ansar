@@ -1,54 +1,27 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { useState } from 'react';
 
-const LESSONS = [
-  { week: 1, title: 'Wudu', desc: 'How to do wudu step-by-step' },
-  { week: 2, title: 'Fatiha', desc: 'Learn Surah Al-Fatiha slowly' },
-  { week: 3, title: 'Salah', desc: 'How to pray 5 daily prayers' },
-  { week: 4, title: 'Tawheed', desc: 'What is Tawheed? One God' },
-  { week: 5, title: 'Fasting', desc: 'Why we fast in Ramadan' },
-  { week: 6, title: 'How To Make Dua', desc: 'Talk to Allah, He listens' },
-];
-
-export default function MadrasahPage({ onBack }: any) {
-  const [students, setStudents] = useState<any[]>([]);
-  const [name, setName] = useState(''); const [anchor, setAnchor] = useState(''); const [lang, setLang] = useState('English');
-  const load = async () => { const { data } = await supabase.from('madrasah_progress').select('*').order('created_at', { ascending: false }); if (data) setStudents(data); };
-  useEffect(() => { load(); }, []);
-  const enroll = async () => {
-    if (!name.trim()) { alert('Put student name'); return; }
-    await supabase.from('madrasah_progress').insert({ student_name: name, anchor_name: anchor, current_week: 1, completed_lessons: '', language: lang });
-    setName(''); setAnchor(''); load();
-  };
-  const nextWeek = async (s: any) => {
-    const next = Math.min(6, s.current_week + 1);
-    await supabase.from('madrasah_progress').update({ current_week: next, completed_lessons: (s.completed_lessons || '') + ' Week ' + s.current_week + ' done. ' }).eq('id', s.id); load();
-  };
+export default function MadrasahPage({ onBack }: { onBack: () => void }) {
+  const lessons = [
+    { title: 'Quran — Al-Fatiha Tajweed', level: 'Beginner', topic: 'Quran', quiz: 'What is the first word of Al-Fatiha?', answer: 'Alhamdulillah' },
+    { title: 'Arabic Alphabet in 7 Days', level: 'Beginner', topic: 'Arabic', quiz: 'What is the first letter of the Arabic alphabet?', answer: 'Alif' },
+    { title: 'Fiqh of Salah — Step by Step', level: 'Beginner', topic: 'Fiqh', quiz: 'How many Rakats is Dhuhr?', answer: '4' },
+    { title: 'How To Perform Wudu Correctly', level: 'Beginner', topic: 'Fiqh', quiz: 'What do you start Wudu with?', answer: 'Bismillah and intention' },
+    { title: 'Seerah — Life of the Prophet ﷺ', level: 'All Levels', topic: 'Seerah', quiz: 'Where was the Prophet ﷺ born?', answer: 'Makkah' },
+  ];
+  const [progress, setProgress] = useState(2); const [streak, setStreak] = useState(7); const [showQuiz, setShowQuiz] = useState<number | null>(null); const [quizAnswer, setQuizAnswer] = useState(''); const [completedQuizzes, setCompletedQuizzes] = useState<number[]>([]);
   return (
-    <div className="min-h-screen bg-[#F9F7F4] pb-24">
-      <header className="sticky top-0 bg-white p-4 border-b flex items-center gap-3 z-10"><button onClick={onBack} className="bg-black/10 px-4 py-2 rounded-full text-[11px] font-bold">← Back</button><span className="font-black text-[13px]">📖 MADRASAH - Learn Islam Slowly</span></header>
-      <div className="p-4">
-        <div className="bg-[#0A1930] rounded-2xl p-4 text-white"><p className="text-[11px] text-[#D4AF78] font-bold">NO 500-PAGE BOOK • NO EXAM • NO SHAME</p><p className="text-[12px] text-white/70 mt-2 leading-6">Small small. One step per week. 3-min video. Your Anchor go encourage you: "MashaAllah, you don learn Fatiha!"</p></div>
-        <div className="mt-4 space-y-2">{LESSONS.map(l => (
-          <div key={l.week} className="bg-white rounded-2xl border p-4 flex justify-between items-center"><div><p className="font-black text-[13px]">Week {l.week}: {l.title}</p><p className="text-[11px] text-gray-500">{l.desc}</p></div><button className="bg-black text-white px-4 py-2 rounded-full text-[11px] font-bold">▶ Watch 3min</button></div>
-        ))}</div>
-        <div className="bg-white rounded-2xl border p-4 mt-4">
-          <h3 className="font-black text-[13px]">+ Enroll Student</h3>
-          <input value={name} onChange={e => setName(e.target.value)} placeholder="Student name e.g. Chidinma" className="w-full mt-3 p-3 rounded-xl border text-[13px]" />
-          <input value={anchor} onChange={e => setAnchor(e.target.value)} placeholder="Anchor name e.g. Maryam" className="w-full mt-2 p-3 rounded-xl border text-[13px]" />
-          <select value={lang} onChange={e => setLang(e.target.value)} className="w-full mt-2 p-3 rounded-xl border text-[13px]"><option>English</option><option>Pidgin</option><option>Hausa</option><option>Yoruba</option><option>French</option><option>Arabic</option></select>
-          <button onClick={enroll} className="w-full mt-2 bg-[#0A1930] text-[#D4AF78] py-3.5 rounded-full text-[11px] font-black">ENROLL →</button>
+    <div className="min-h-screen bg-[#0F2439] max-w-[430px] mx-auto pb-[120px]">
+      <div className="px-5 pt-4 flex items-center gap-3"><button onClick={onBack} className="w-10 h-10 bg-white/10 rounded-full text-white">←</button><div><h1 className="text-white font-extrabold">MADRASAH</h1><p className="text-[#D4AF78] text-[11px] font-bold">LEARN SLOWLY AND SURELY</p></div></div>
+      <div className="mx-4 mt-4 bg-white rounded-[24px] p-5 flex items-center justify-between"><div><p className="font-extrabold text-[16px]">🔥 {streak} Day Streak</p><p className="text-[12px] text-gray-500">You have learned for 7 days in a row. Keep it up.</p></div><div className="text-center"><p className="text-[28px]">🏆</p><p className="text-[10px] font-bold text-gray-400">LEVEL 2</p></div></div>
+      <div className="mx-4 mt-3 bg-white rounded-[24px] p-5"><p className="font-extrabold">Your Progress</p><p className="text-[12px] text-gray-500">{progress} of {lessons.length} lessons completed.</p><div className="h-3 bg-gray-100 rounded-full mt-3"><div className="h-3 bg-emerald-500 rounded-full" style={{ width: `${(progress / lessons.length) * 100}%` }} /></div><p className="text-[11px] text-gray-400 mt-2">Complete all 5 to earn your Madrasah Certificate.</p></div>
+      {lessons.map((l, i) => (
+        <div key={l.title} className="mx-4 mt-3 bg-white rounded-[20px] p-4">
+          <div className="flex items-center justify-between"><div><p className="font-extrabold text-[14px]">{l.title}</p><p className="text-[11px] text-gray-500">{l.topic} • {l.level} • 5 minutes</p></div><button onClick={() => { setProgress(Math.max(progress, i + 1)); setShowQuiz(i); }} className={`px-4 py-2 rounded-full text-[12px] font-bold shrink-0 ${i < progress ? 'bg-emerald-100 text-emerald-700' : 'bg-black text-white'}`}>{i < progress ? 'Review' : 'Start →'}</button></div>
+          {showQuiz === i && (
+            <div className="bg-[#F7F3EC] rounded-[16px] p-4 mt-3"><p className="font-bold text-[13px]">Quick Quiz: {l.quiz}</p><input value={quizAnswer} onChange={e => setQuizAnswer(e.target.value)} placeholder="Your answer..." className="w-full mt-2 bg-white border rounded-[12px] px-3 py-2.5 text-[13px] outline-none" /><button onClick={() => { if (quizAnswer.toLowerCase().includes(l.answer.toLowerCase().slice(0, 3))) { alert('Correct! Well done. You earned 10 points.'); setCompletedQuizzes(prev => [...prev, i]); } else { alert(`Not quite. The answer is: ${l.answer}. Try again.`); } }} className="w-full mt-2 bg-[#D4AF78] font-bold py-2.5 rounded-full text-[13px]">Check Answer</button>{completedQuizzes.includes(i) && <p className="text-[12px] text-emerald-700 font-bold mt-2">✓ Quiz Passed — 10 Points Earned</p>}</div>
+          )}
         </div>
-        <div className="mt-4 space-y-3">{students.map(s => (
-          <div key={s.id} className="bg-white rounded-2xl border p-4">
-            <p className="font-black text-[13px]">{s.student_name} • {s.language}</p>
-            <p className="text-[11px] text-gray-500">Anchor: {s.anchor_name || 'Not assigned'} • Current: Week {s.current_week} - {LESSONS[s.current_week - 1]?.title}</p>
-            <div className="mt-2 bg-gray-100 rounded-full h-2 overflow-hidden"><div className="h-full bg-green-600" style={{ width: (s.current_week / 6) * 100 + '%' }}></div></div>
-            <p className="text-[10px] text-gray-500 mt-1">{s.completed_lessons || 'Just started - Alhamdulillah'}</p>
-            <button onClick={() => nextWeek(s)} className="mt-2 bg-green-600 text-white px-4 py-2 rounded-full text-[11px] font-bold">✅ Complete This Week → Next Week</button>
-          </div>
-        ))}</div>
-      </div>
+      ))}
     </div>
   );
-            }
+}

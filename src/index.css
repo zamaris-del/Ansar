@@ -1,49 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&family=Amiri:wght@400;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: #071523;
-  -webkit-font-smoothing: antialiased;
-}
-.font-serif-lux { font-family: 'Playfair Display', serif; }
-.font-arabic { font-family: 'Amiri', serif; }
+* { box-sizing: border-box; }
+html, body { overflow-x: hidden; background: #0F2439; }
+body { margin: 0; font-family: Inter, system-ui, sans-serif; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* ISLAMIC FADE BACKGROUND - like Zamari */
-.islamic-bg {
-  background:
-    radial-gradient(600px 400px at 80% -10%, rgba(212,175,120,0.28), transparent 60%),
-    radial-gradient(500px 350px at 10% 10%, rgba(212,175,120,0.12), transparent 60%),
-    linear-gradient(180deg, #0A1F33 0%, #0F2439 30%, #0B1A29 65%, #071523 100%);
-}
-.islamic-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23D4AF78' stroke-opacity='0.07'%3E%3Cpath d='M30 0 L38 22 L60 30 L38 38 L30 60 L22 38 L0 30 L22 22 Z'/%3E%3Ccircle cx='30' cy='30' r='8'/%3E%3C/g%3E%3C/svg%3E");
-}
-.gold-text {
-  background: linear-gradient(135deg, #E8C99A 0%, #D4AF78 40%, #FFF2CC 70%, #D4AF78 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.gold-btn {
-  background: linear-gradient(135deg, #F5D9A8 0%, #D4AF78 50%, #B9975B 100%);
-  box-shadow: 0 12px 35px rgba(212,175,120,0.35), inset 0 1px 0 rgba(255,255,255,0.5);
-}
-.glass {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.09);
-  backdrop-filter: blur(12px);
-}
-.glass-white {
-  background: rgba(255,255,255,0.97);
-  border: 1px solid rgba(212,175,120,0.2);
-}
-.input-lux {
-  width: 100%; background: #F7F3EC; border: 1px solid #E8DDC8; border-radius: 16px;
-  padding: 14px 16px; font-size: 14px; outline: none;
-}
-.input-lux:focus { border-color: #D4AF78; background: #fff; box-shadow: 0 0 0 3px rgba(212,175,120,0.15); }
+.no-scrollbar { scrollbar-width: none; }
+.font-serif-lux { font-family: Georgia, serif; }
+input, textarea, select { font-size: 16px !important; }
